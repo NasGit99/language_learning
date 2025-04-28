@@ -1,0 +1,8 @@
+Roadmap for this project:
+    - Create a system for translating languages (From and To) - Done
+    - Parse through all applicable language codes - Done
+    - User interface for users to store their saved translations
+    - Import txt files with intended translations
+    - Start creating front end with flask
+        - User creation page to store saved translations
+        - 
