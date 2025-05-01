@@ -8,8 +8,7 @@ import os
 # Add the 'src' directory to the sys.path to make all modules inside it accessible
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/language_modifier/')))
 
-# Now, you can import your module
-from language_resource import validate_codes  # Import the function to be tested
+from language_resource import validate_codes
 
 class TestUserInput(unittest.TestCase):
 
