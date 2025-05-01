@@ -1,5 +1,4 @@
-from text_translator import *
-import datetime
+from file_translator import *
 import os
 
 def read_txt_file(file_path):
@@ -8,7 +7,7 @@ def read_txt_file(file_path):
             # Handles multi line files and saves it as a list
             lines = file.readlines()
             if not lines:
-                print("The file {file_path}is empty")
+                print(f"The file {file_path}is empty")
                 return None
             return lines
     except FileNotFoundError:
@@ -37,9 +36,9 @@ def create_new_file(file_path, target_lang_code):
         return None
 
     try:
-        with open (file_name,"x") as file:
-            for lines in content:
-                file.write(lines + '\n')
+        with open (file_name,"x", encoding="utf-8") as file:
+            for line in content:
+                file.write(line + '\n')
     except FileExistsError:
         print(f"Error: The file {target_lang_code}_{file_path} already exists. Creating a new file")
 
@@ -54,7 +53,6 @@ def create_new_file(file_path, target_lang_code):
         
         # Create and write to the new unique file name
         with open(file_name, "x", encoding="utf-8") as file:
-            content = translate_file(file_path, target_lang_code)
             for line in content:
                 file.write(line + '\n')
 

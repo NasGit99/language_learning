@@ -1,4 +1,3 @@
-from translate import Translator
 import requests 
 from bs4 import BeautifulSoup as bs
 
@@ -23,11 +22,22 @@ def create_lang_codes():
     
     return lang_dict
 
-def translate_text (txt, language) -> str:
-    translator= Translator(to_lang=language)
-    translation = translator.translate(txt)
-    
-    return(translation)
+def validate_codes(input_language):
 
+    language_code_map = create_lang_codes()
+
+    while True:
+        # Looking for valid language and returning the language code
+        for code, language_name in language_code_map.items():
+            if input_language.lower() in language_name.lower():
+                matched_code = code
+                return(matched_code)
+        
+        input_language = input("No match found. Try another language or type exit to quit: ")   
+
+        if input_language.lower == "exit":     
+            break
+        
+        return None
 
 
