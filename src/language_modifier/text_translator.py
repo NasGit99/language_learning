@@ -1,6 +1,7 @@
-from file_translator import *
+from language_translator import *
 import os
 
+# Currently only able to translate english to target language
 def read_txt_file(file_path):
     try:
         with open(file_path,"r") as file:
@@ -22,7 +23,7 @@ def translate_file(file_path, target_lang_code):
     if lines is None:
         return None
 
-    translated_text = [translate_text(line.strip(),target_lang_code) for line in lines]
+    translated_text = [asyncio.run(translate_text(line.strip(),target_lang_code)) for line in lines]
     return translated_text
 
 def create_new_file(file_path, target_lang_code):
