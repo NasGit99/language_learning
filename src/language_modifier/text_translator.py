@@ -1,7 +1,6 @@
 from language_translator import *
 import os
 
-# Currently only able to translate english to target language
 def read_txt_file(file_path):
     try:
         with open(file_path,"r") as file:
@@ -29,7 +28,7 @@ def translate_file(file_path, target_lang_code):
 def create_new_file(file_path, target_lang_code):
     # Use the old file name and append the target language for naming
 
-    file_name = f"{target_lang_code}_{file_path}"
+    output_file = f"{target_lang_code}_{file_path}"
     content = translate_file(file_path, target_lang_code)
 
     # Prevents files that do not exist from being entered
@@ -37,7 +36,7 @@ def create_new_file(file_path, target_lang_code):
         return None
 
     try:
-        with open (file_name,"x", encoding="utf-8") as file:
+        with open (output_file,"x", encoding="utf-8") as file:
             for line in content:
                 file.write(line + '\n')
     except FileExistsError:
@@ -45,22 +44,22 @@ def create_new_file(file_path, target_lang_code):
 
         # If the file already exists, append a number to the file name
         counter = 1
-        base_name, ext = os.path.splitext(file_name)
+        base_name, ext = os.path.splitext(output_file)
 
         # Keep checking if the file exists, appending a number until it doesn't
-        while os.path.exists(file_name):
-            file_name = f"{base_name}_{counter}{ext}"
+        while os.path.exists(output_file):
+            output_file = f"{base_name}_{counter}{ext}"
             counter += 1
         
         # Create and write to the new unique file name
-        with open(file_name, "x", encoding="utf-8") as file:
+        with open(output_file, "x", encoding="utf-8") as file:
             for line in content:
                 file.write(line + '\n')
 
 if __name__ == "__main__":
     # ToDo either in the UI or CLI, add code so user can check lang codes. 
     # ToDo add code to also validate file in this step and make sure the path is correct before proceeding
-    file = input("Type the name of your file:")
+    raw_file = input("Type the name of your file:")
     lang_code = input("Type the name of the language you want to translate the file to: ")
 
-    create_new_file(file,lang_code)
+    create_new_file(raw_file,lang_code)

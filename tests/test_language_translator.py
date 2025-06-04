@@ -10,10 +10,13 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 from language_translator import translate_text
 
 class TestTranslateText(unittest.IsolatedAsyncioTestCase):
-
     async def test_translate(self):
         result = await(translate_text('Hi','French'))
         self.assertTrue(result)
-        
+
+    async def test_bad_translate(self):
+        with self.assertRaises(ValueError):
+            await translate_text('Hi', 'BadFrench')
+
 if __name__ == '__main__':
     unittest.main()
