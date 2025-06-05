@@ -38,7 +38,7 @@ class TestUserInput(unittest.TestCase):
     def test_file_exists(self):
         create_new_file(test_file_1,test_language_1)
         self.assertRaises(FileExistsError)
-        self.assertTrue(os.path.exists('SPanish_testfile_1.txt'))
+        self.assertTrue(os.path.exists('Spanish_testfile.txt'))
     
     def test_file_not_valid(self):
         create_new_file("FakeFile.txt",test_language_1)
@@ -53,6 +53,6 @@ class TestUserInput(unittest.TestCase):
 if __name__ == '__main__':
     create_txt_file()
     unittest.main(exit=False)
-    time.sleep(15)
-    print("Deleting test files in 15 seconds")
+    time.sleep(20)
+    print("Deleting test files in 20 seconds")
     remove_test_files()

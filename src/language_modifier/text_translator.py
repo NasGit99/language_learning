@@ -22,7 +22,11 @@ def translate_file(file_path, target_lang_code):
     if lines is None:
         return None
 
-    translated_text = [asyncio.run(translate_text(line.strip(),target_lang_code)) for line in lines]
+    translated_text=[]
+
+    for line in lines:
+        translated_text.append(line.strip())
+        translated_text.append("Translation: " + asyncio.run(translate_text(line,target_lang_code)))
     return translated_text
 
 def create_new_file(file_path, target_lang_code):
