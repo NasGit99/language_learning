@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Language Learning - Document Your Translations {% block title %}{% endblock title %}</title>
+  <title>Language Learning {% block title %}{% endblock title %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-<h1>Translate any language</h1>
 <section>
   <header>
     {% block header %}{% endblock header %}
   </header>
+  <nav>
+        <a href="/">Home</a>
+        <a href="/documents">Document</a>
+        <a href="/about">About</a>
+    </nav>
   <main>
     {% block content %}<p>No messages.</p>{% endblock content %}
   </main>

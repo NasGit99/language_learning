@@ -5,7 +5,7 @@ import os
 from templates.blueprints.main_bp import main_bp
 
 def create_app():
-    app = Flask(__name__,template_folder='pages')
+    app = Flask(__name__)
     app.register_blueprint(main_bp)
 
     return app
