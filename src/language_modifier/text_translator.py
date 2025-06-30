@@ -25,6 +25,9 @@ def translate_file(file_path, target_lang_code):
     translated_text=[]
 
     for line in lines:
+        # Ignores blank lines
+        if not line.strip():
+            continue
         translated_text.append(line.strip())
         translated_text.append("Translation: " + asyncio.run(translate_text(line,target_lang_code)))
     return translated_text

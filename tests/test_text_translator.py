@@ -15,6 +15,7 @@ test_file_1 ="testfile.txt"
 test_language_1 = "Spanish"
 test_file_2 ="testfile2.txt"
 test_language_2= "Hindi"
+test_file_3 ="testfile3.txt"
 
 def create_txt_file():
     with open(test_file_1, "w") as file:
@@ -22,6 +23,9 @@ def create_txt_file():
     
     with open(test_file_2, "w") as file:
         file.write("This is a test file\n This is the second line for the test file \n This is the third line")
+        
+    with open(test_file_3, "w") as file:
+        file.write("This is a test file\n  \n There should be a blank above this that was skipped")
 
 
 def remove_test_files():
@@ -47,6 +51,11 @@ class TestUserInput(unittest.TestCase):
     def test_multi_line_file(self):
         create_new_file(test_file_2,test_language_2)
         self.assertTrue(os.path.exists('Hindi_testfile2.txt'))
+    
+    def test_blank_line(self):
+        create_new_file(test_file_3,test_language_2)
+        self.assertTrue(os.path.exists('Hindi_testfile3.txt'))
+
         
     ## ToDo, Test multi line files
 
