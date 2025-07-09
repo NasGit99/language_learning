@@ -1,11 +1,12 @@
 
 class User_Profile:
   
-    def __init__(self, username, first_name, last_name, email):
+    def __init__(self, username, first_name, last_name, email, password):
         self.username = username
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
+        self.password = password
     
     def modify_profile(self, field, new_value):
         allowed_fields = {'username', 'first_name', 'last_name', 'email'}
