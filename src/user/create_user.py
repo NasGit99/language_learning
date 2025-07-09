@@ -1,31 +1,17 @@
 
 class User_Profile:
   
-    def __init__(self, userName, firstName, lastName, email):
-        self.userName = userName
-        self.firstName = firstName
-        self.lastName = lastName
+    def __init__(self, username, first_name, last_name, email):
+        self.username = username
+        self.first_name = first_name
+        self.last_name = last_name
         self.email = email
     
-    def user_details(self):
-        print(f"""
-            USER DETAILS \n
-            -----------------
-            Username: {self.userName} \n
-            First Name: {self.firstName} \n
-            Last Name: {self.lastName} \n
-            Email: {self.email}
-                    """)
-    
     def modify_profile(self, field, new_value):
+        allowed_fields = {'username', 'first_name', 'last_name', 'email'}
+        normalized_field = field.strip().lower().replace(" ","_")
+        if normalized_field in allowed_fields:
+            setattr(self, normalized_field, new_value)
+        else:
+            raise AssertionError(f"Cannot update '{field}'. Invalid field.")
 
-    field = field.lower()
-
-    if field == 'username':
-        self.userName = new_value
-    elif field == 'first name':
-        self.firstName = new_value
-    elif field == 'last name':
-        self.lastName = new_value
-    elif field == 'email':
-        self.email = new_value
