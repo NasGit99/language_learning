@@ -1,15 +1,28 @@
 import bcrypt
 import secrets
 from datetime import datetime
-from create_user import *
-from db.db_connector import *
-
+import sys
+sys.path.append('../db/')
+from db_functions import *
 #Remaining tasks: Create a db to store hashes
 
-def db_connection(query):
-    db = Database()
 
-    db.execute_query(query)
+def insert_user_query():
+
+    query ="""
+
+    INSERT INTO users (username, email, first_name, last_name, password, created_at)
+    VALUES (%s, %s, %s, %s, %s, %s);
+        """   
+    return query 
+
+def retrieve_username_query():
+    query = "select username from users where username = %s"
+    return query
+
+def retrieve_password_query():
+    query = "select password from users where username = %s"
+    return query
 
 def hash_password(password):
 
@@ -21,13 +34,21 @@ def hash_password(password):
 def decrypt_hash(password,stored_hash):
     # Checks the inputted password against the hash
     password_bytes = password.encode("utf-8")
-    return bcrypt.checkpw(password_bytes, stored_hash)  
+    hash_bytes = stored_hash.encode("utf-8")
+    return bcrypt.checkpw(password_bytes, hash_bytes)  
 
 def validate_username():
     while True:
-        username = input("Type your username, length is 16")
+        username = input("Type your username, max length is 16 characters: ")
+
         if len(username) > 16:
-            print("Length too long")
+            print("Username is greater than 16 characters")
+            continue
+
+        validate_username = retrieve_data(retrieve_username_query(), username)
+
+        if validate_username:
+            print("Username already exists: Try again: ")
             continue
         else:
             break
@@ -72,18 +93,7 @@ def validate_email():
             break 
     return email
 
-def insert_user_query():
-
-    query ="""
-
-    INSERT INTO users (username, email, first_name, last_name, password, created_at)
-    VALUES (%s, %s, %s, %s, %s, %s);
-        """
-    
-
 def create_signup():
-    # Later on I can validate this user_list with the DB
-    ## Check if user is in DB if not then allow creation
         username = validate_username()
         first_name = validate_name("fn")
         last_name = validate_name("ln")
@@ -92,38 +102,42 @@ def create_signup():
         hashed_password = hash_password(password)
         timestamp = datetime.now()
 
-        user = User_Profile(username,first_name, last_name, email)
-
         values = (username, email, first_name, last_name, hashed_password, timestamp)
 
-        query = db_connection(insert_user_query)
-        
-        
+        insert_users(insert_user_query(),values)
+               
 def create_login():
-
+        
+    while True:
         registered_user = validate_username()
 
-        while True:
-            #ToDO fill this in with db objects
-            if registered_user not in registered_password :
-                print("Not registered, try again")
+        user_result = retrieve_data(retrieve_username_query(), registered_user)
+
+        if user_result is None:
+            print("Username not found")
+            continue
+
+        username = user_result[0]
+
+        print("Username found: ", username)
+
+        break
+
+    while True:
+            registered_password = input("Type password")
+            password_result = retrieve_data(retrieve_password_query(), registered_user)
+            
+            if password_result is None:
+                print("Could not find password, try again")
+                # Future iterations could include a password attempt
                 continue
-            else:
-                break
 
-        registered_password = input("Type password")
-
-        # Here I will check the hash of the password to see if it matches registered_password
-
-        while True:
-            #This needs to be changed to grab the hash from the db
-            stored_hash = "TODO"
+            stored_hash = password_result[0]
+            
             if not decrypt_hash(registered_password,stored_hash):
                 print("Incorrect password, try again")
                 continue
             else:
-                break
-        print ("Successful login")
-
-        return registered_user
+                print ("Successful login")
+            return registered_user
 

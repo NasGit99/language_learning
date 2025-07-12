@@ -1,5 +1,8 @@
 from var import *
 import mysql.connector
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 class Database():
 
@@ -20,12 +23,50 @@ class Database():
             print("Error: Connection not established {}".format(error))
          else:
             print("Connection established")
+   
+   def execute_query(self, sql, values=None):
+    if Database.connection is None:
+        print("Error: No active connection")
+        return
+    try:
+        cursor = Database.connection.cursor()
+        if values:
+            cursor.execute(sql, values)
+        else:
+            cursor.execute(sql)
+        Database.connection.commit()
+    except Exception:
+        logging.error("Failed to execute query: %s", sql)
+        logging.error("With values: %s", values)
+        logging.exception("Exception occurred during cursor.execute()")
+    else:
+        logging.info("Query executed successfully.")
+    finally:
+        if cursor:
+            cursor.close()
+      
 
-   def execute_query(self, sql):
-      if Database.connection is None:
-         print("Error: No active connection")
-         return
-      cursor = Database.connection.cursor()
-      cursor.execute(sql)
-      print("Query executed")
-      cursor.close()
+   def execute_query_fetch_one(self, sql, values=None):
+    if Database.connection is None:
+        print("Error: No active connection")
+        return None
+    try:
+        cursor = Database.connection.cursor()
+        if values:
+            cursor.execute(sql, values)
+        else:
+            cursor.execute(sql)
+        result = cursor.fetchone()  # fetch the single row
+    except Exception:
+        logging.error("Failed to execute query: %s", sql)
+        logging.error("With values: %s", values)
+        logging.exception("Exception occurred during cursor.execute()")
+        return None
+    else:
+        logging.info("Query executed successfully.")
+        return result
+    finally:
+        if cursor:
+            cursor.close()
+   
+
