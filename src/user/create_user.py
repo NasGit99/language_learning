@@ -1,4 +1,5 @@
 
+# I might not need this right now. I can remove the class and just keep modify_profile for updating the db
 class User_Profile:
   
     def __init__(self, username, first_name, last_name, email):

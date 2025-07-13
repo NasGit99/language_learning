@@ -4,8 +4,6 @@ from datetime import datetime
 import sys
 sys.path.append('../db/')
 from db_functions import *
-#Remaining tasks: Create a db to store hashes
-
 
 def insert_user_query():
 
@@ -32,27 +30,39 @@ def hash_password(password):
     return password_hash
 
 def decrypt_hash(password,stored_hash):
-    # Checks the inputted password against the hash
+    # Checks the password against the hash
     password_bytes = password.encode("utf-8")
     hash_bytes = stored_hash.encode("utf-8")
     return bcrypt.checkpw(password_bytes, hash_bytes)  
 
-def validate_username():
-    while True:
-        username = input("Type your username, max length is 16 characters: ")
+def validate_username(function):
+    if function == "signup":
+        while True:
+            username = input("Type your username, max length is 16 characters: ")
 
-        if len(username) > 16:
-            print("Username is greater than 16 characters")
-            continue
+            if len(username) > 16:
+                print("Username is greater than 16 characters")
+                continue
 
-        validate_username = retrieve_data(retrieve_username_query(), username)
+            validate_username = retrieve_data(retrieve_username_query(), username)
 
-        if validate_username:
-            print("Username already exists: Try again: ")
-            continue
-        else:
-            break
-    return username
+            if validate_username:
+                print("Username already exists: Try again: ")
+                continue
+            else:
+                break
+        return username
+    
+    if function == "login":
+        while True:
+            username = input("Type your username, max length is 16 characters: ")
+
+            if len(username) > 16:
+                print("Username is greater than 16 characters")
+                continue
+            else:
+                break
+        return username
 
 def validate_name(field):
     # Might seperate this later in case the names need seperate logic
@@ -94,7 +104,7 @@ def validate_email():
     return email
 
 def create_signup():
-        username = validate_username()
+        username = validate_username("signup")
         first_name = validate_name("fn")
         last_name = validate_name("ln")
         email = validate_email()
@@ -109,7 +119,7 @@ def create_signup():
 def create_login():
         
     while True:
-        registered_user = validate_username()
+        registered_user = validate_username("login")
 
         user_result = retrieve_data(retrieve_username_query(), registered_user)
 
@@ -141,3 +151,4 @@ def create_login():
                 print ("Successful login")
             return registered_user
 
+create_login()
