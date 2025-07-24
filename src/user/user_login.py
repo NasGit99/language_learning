@@ -123,7 +123,7 @@ def create_signup(username,first_name,last_name, email, password):
 
             values = (username, email, first_name, last_name, hashed_password, timestamp)
 
-            #insert_data(insert_user_query(),values)
+            insert_data(insert_user_query(),values)
 
             return username, None
                
