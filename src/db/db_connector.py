@@ -48,7 +48,6 @@ class Database():
         if cursor:
             cursor.close()
       
-
    def execute_query_fetch_one(self, sql, values=None):
     if Database.connection is None:
         print("Error: No active connection")
