@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %} - Login{% endblock %}
+
+{% block header %}
+<h1>Signup</h1>
+{% endblock %}
+
+
+{% block content %}
+
+
+{% if not session.username %}
+<form method="POST" action="/signup">
+</form>
+{% else %}
+<p>You are already logged in as {{ session.username }}. You can make a new account or logout</p>
+<a href="{{ url_for('main.logout') }}">Logout</a>
+{% endif %}
+
+<form method="POST" action="/signup">
+  <label for="username">Username:</label><br />
+  <input type="text" id="username" name="username" required maxlength="16" /><br /><br />
+  {% if errors.username %}
+    <div style="color:red">{{ errors.username }}</div>
+  {% endif %}
+
+  <label for="first_name">First Name:</label><br />
+  <input type="text" id="first_name" name="first_name" required /><br /><br />
+
+    {% if errors.first_name %}
+    <div style="color:red">{{ errors.first_name }}</div>
+  {% endif %}
+
+  <label for="last_name">Last Name:</label><br />
+  <input type="text" id="last_name" name="last_name" required /><br /><br />
+
+   {% if errors.last_name %}
+    <div style="color:red">{{ errors.last_name }}</div>
+  {% endif %}
+
+  <label for="email">Email:</label><br />
+  <input type="email" id="email" name="email" required /><br /><br />
+   {% if errors.email %}
+    <div style="color:red">{{ errors.email }}</div>
+  {% endif %}
+
+  <label for="password">Password:</label><br />
+  <input type="password" id="password" name="password" required minlength="=8" /><br /><br />
+
+   {% if errors.password %}
+    <div style="color:red">{{ errors.password }}</div>
+  {% endif %}
+
+  <input type="submit" value="Register" />
+</form>
+
+{% endblock %}

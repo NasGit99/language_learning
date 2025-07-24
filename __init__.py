@@ -4,10 +4,22 @@ import os
 
 from templates.blueprints.main_bp import main_bp
 
-def create_app():
-    app = Flask(__name__)
+def create_app(test_config=None):
+    instance_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'instance'))
+    app = Flask(__name__, instance_path=instance_path)
     app.register_blueprint(main_bp)
+    app.config.from_mapping(SECRET_KEY ='dev')
 
+    if test_config is None:
+        app.config.from_pyfile('config.py', silent=True)
+    else:
+        app.config.from_mapping(test_config)
+
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
+    
     return app
 
 

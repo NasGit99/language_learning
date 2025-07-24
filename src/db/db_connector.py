@@ -23,6 +23,8 @@ class Database():
             print("Error: Connection not established {}".format(error))
          else:
             print("Connection established")
+    
+    #ToDO: reduce repetitive code
    
    def execute_query(self, sql, values=None):
     if Database.connection is None:
@@ -35,12 +37,13 @@ class Database():
         else:
             cursor.execute(sql)
         Database.connection.commit()
+        affected = cursor.rowcount
     except Exception:
         logging.error("Failed to execute query: %s", sql)
         logging.error("With values: %s", values)
         logging.exception("Exception occurred during cursor.execute()")
     else:
-        logging.info("Query executed successfully.")
+        logging.info(f"Query executed successfully. Rows affected: {affected}")
     finally:
         if cursor:
             cursor.close()
@@ -63,7 +66,8 @@ class Database():
         logging.exception("Exception occurred during cursor.execute()")
         return None
     else:
-        logging.info("Query executed successfully.")
+        affected = cursor.rowcount
+        logging.info(f"Select query executed successfully. Rows affected: {affected}")
         return result
     finally:
         if cursor:

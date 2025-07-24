@@ -9,10 +9,17 @@
   <header>
     {% block header %}{% endblock header %}
   </header>
+  
   <nav>
         <a href="/">Home</a>
-        <a href="/documents">Document</a>
         <a href="/about">About</a>
+        <a href="/signup">Sign Up</a>
+        <a href="/login">Login</a>
+        {% if session.username %}
+<form action="{{ url_for('main.logout') }}" method="POST" style="display: inline;">
+    <button type="submit">Logout</button>
+</form>
+{% endif %}
     </nav>
   <main>
     {% block content %}<p>No messages.</p>{% endblock content %}

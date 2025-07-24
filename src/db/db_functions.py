@@ -5,7 +5,6 @@ def retrieve_data(query,column):
     result = db.execute_query_fetch_one(query, (column,))
     return result
    
-def insert_users(query,values):
+def insert_data(query,values):
     db = Database()
-
     db.execute_query(query,values)
