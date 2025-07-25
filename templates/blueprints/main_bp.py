@@ -4,7 +4,9 @@ import os
 from src.language_modifier.language_translator import *
 from src.language_modifier.language_code_resource import *
 from src.user.user_login import create_login, create_signup
-#from src.user.user_translations import text_history, saved_txt
+from src.user.user_translations import text_history, saved_txt
+from datetime import datetime
+from src.db.db_functions import *
 
 main_bp = Blueprint("main", __name__, template_folder='../pages')
 
@@ -59,8 +61,8 @@ def logout():
 
 def process_text():
     lang_codes = create_lang_codes()
-    username = session.get('username') 
-    #timestamp = datetime()
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
 
     if request.method == "POST":
         user_text = request.form['user_text']
@@ -73,12 +75,15 @@ def process_text():
 
     if user_text and target_language:
         transformed_text = asyncio.run(translate_text(user_text, target_language))
+    
+    username = session.get('username')
+    
+    if username:
+        values = (username, user_text, transformed_text, timestamp)
+        query = text_history()
 
-    #if username:
-    #       values = (username, user_text, transformed_text, timestamp)
-
-            #Insert logic to save to db for history
-    #        pass
+        insert_data(query,values)
+        pass
 
     return render_template(
         'home.html',

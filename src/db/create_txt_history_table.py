@@ -5,7 +5,7 @@ def create_txt_history_table():
    query ="""
     CREATE TABLE IF NOT EXISTS users_txt_history (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
+    username VARCHAR(50) NOT NULL,
     src_txt VARCHAR(2000) NOT NULL,
     dst_txt VARCHAR(2000),
     submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
