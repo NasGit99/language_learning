@@ -3,7 +3,7 @@ from db_connector import *
 def create_saved_txt_table():
    db = Database()
    query ="""
-    CREATE TABLE IF NOT EXISTS user_saved_txt (
+    CREATE TABLE IF NOT EXISTS users_saved_txt (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     src_txt VARCHAR(2000) NOT NULL,
@@ -14,4 +14,4 @@ def create_saved_txt_table():
    
 
 if __name__ == "__main__":
-   create_txt_history_table()
+   create_saved_txt_table()

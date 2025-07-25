@@ -3,7 +3,7 @@ from db_connector import *
 def create_txt_history_table():
    db = Database()
    query ="""
-    CREATE TABLE IF NOT EXISTS user_txt_history (
+    CREATE TABLE IF NOT EXISTS users_txt_history (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     src_txt VARCHAR(2000) NOT NULL,
