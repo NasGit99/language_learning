@@ -8,3 +8,7 @@ def retrieve_data(query,column):
 def insert_data(query,values):
     db = Database()
     db.execute_query(query,values)
+
+def delete_data(query):
+    db = Database()
+    db.execute_query(query)

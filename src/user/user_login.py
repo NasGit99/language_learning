@@ -42,12 +42,12 @@ def validate_username(function,username):
 
         while True:
             if len(username) > 16:
-                return ValueError("Username is greater than 16 characters")
+                raise ValueError("Username is greater than 16 characters")
 
             validate_username = retrieve_data(retrieve_username_query(), username)
 
             if validate_username:
-              return ValueError("Username already exists: Try again: ")
+              raise ValueError("Username already exists: Try again: ")
             else:
                 break
         return username
@@ -55,7 +55,7 @@ def validate_username(function,username):
     if function == "login":
         while True:
             if len(username) > 16:
-                return ValueError("Username is greater than 16 characters")
+                raise ValueError("Username is greater than 16 characters")
             else:
                 break
         return username
@@ -116,16 +116,18 @@ def create_signup(username,first_name,last_name, email, password):
             errors['password'] = str(e)
         
         if errors:
+            print("ERROR FOUND, not inserting")
             return None, errors
-        else:
-            hashed_password = hash_password(password)
-            timestamp = datetime.now()
+        # Added this so I could have better logging in tests
+        print(f"NO ERRORS — running insert_data for {username} ")
+        hashed_password = hash_password(password)
+        timestamp = datetime.now()
 
-            values = (username, email, first_name, last_name, hashed_password, timestamp)
+        values = (username, email, first_name, last_name, hashed_password, timestamp)
 
-            insert_data(insert_user_query(),values)
+        insert_data(insert_user_query(),values)
 
-            return username, None
+        return username, None
                
 def create_login(username,password):
         
