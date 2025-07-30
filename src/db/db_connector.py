@@ -13,7 +13,7 @@ class Database():
          try:
             temp_conn = mysql.connector.connect(host=host, user=user, password=passwd)
             temp_cursor = temp_conn.cursor()
-            temp_cursor.execute("CREATE DATABASE IF NOT EXISTS language_learning;")
+            temp_cursor.execute("CREATE DATABASE IF NOT EXISTS language_learning CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
             temp_conn.commit()
             temp_cursor.close()
             temp_conn.close()

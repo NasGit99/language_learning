@@ -162,5 +162,3 @@ def create_login(username,password):
             else:
                 print ("Successful login")
             return registered_user
-
-create_signup("usn","12","12","b@gmail.com","dssd")
