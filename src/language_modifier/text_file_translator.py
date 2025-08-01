@@ -1,9 +1,11 @@
 from src.language_modifier.language_translator import *
 import os
 import asyncio
+from flask import current_app
 
 def read_txt_file(file_path):
     try:
+        print(file_path)
         with open(file_path,"r") as file:
             # Handles multi line files and saves it as a list
             lines = file.readlines()
@@ -42,26 +44,29 @@ def create_new_file(file_path, target_lang_code):
     # Prevents files that do not exist from being entered
     if content is None:
         return None
+    if content:
+        try:
+            full_path = os.path.join(current_app.config['UPLOAD_FOLDER'], output_file)
+            with open (full_path,"x", encoding="utf-8") as file:
+                for line in content:
+                    file.write(line + '\n')
+        except FileExistsError:
+            print(f"Error: The file {target_lang_code}_{file_path} already exists. Creating a new file")
 
-    try:
-        with open (output_file,"x", encoding="utf-8") as file:
-            for line in content:
-                file.write(line + '\n')
-    except FileExistsError:
-        print(f"Error: The file {target_lang_code}_{file_path} already exists. Creating a new file")
+    else:       # If the file already exists, append a number to the file name
+            counter = 1
+            base_name, ext = os.path.splitext(output_file)
 
-        # If the file already exists, append a number to the file name
-        counter = 1
-        base_name, ext = os.path.splitext(output_file)
-
-        # Keep checking if the file exists, appending a number until it doesn't
-        while os.path.exists(output_file):
-            output_file = f"{base_name}_{counter}{ext}"
-            counter += 1
-        
-        # Create and write to the new unique file name
-        with open(output_file, "x", encoding="utf-8") as file:
-            for line in content:
-                file.write(line + '\n')
+            # Keep checking if the file exists, appending a number until it doesn't
+            while os.path.exists(full_path):
+                output_file = f"{base_name}_{counter}{ext}"
+                counter += 1
+            
+            # Create and write to the new unique file name
+            with open(full_path, "x", encoding="utf-8") as file:
+                for line in content:
+                    file.write(line + '\n')
+    return os.path.basename(output_file)
+            
 
 

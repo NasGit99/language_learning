@@ -25,15 +25,14 @@ def upload_file():
         if file.filename == '':
             flash('No selected file, please select a file for translation')
             return None
+        if file.filename and not allowed_file(file.filename):
+            flash("File type is not supported")
+            return None
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file_path = (os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+            file_path = (filename)
+            file.save(file_path)
             return file_path
-
-#This will be used later for prompting the user to download the files
-@file_translation_bp.route('/uploads/<name>')
-def download_file(name):
-    return send_from_directory(current_app.config["UPLOAD_FOLDER"], name)  
 
 @file_translation_bp.route('/translate_document', methods=['GET','POST'] )
 
@@ -49,6 +48,13 @@ def translate_text_files():
         # We will return the translated file object here
         translated_file = create_new_file(file, target_language)
         # ToDO: Add code so users can also download
+        return send_from_directory(
+            directory=current_app.config["UPLOAD_FOLDER"],
+            path=translated_file,
+            as_attachment=True,
+            download_name=translated_file
+        )
     return render_template('document_translation.html',
-                           languages=lang_codes)
+                           languages=lang_codes,
+                           )
 
