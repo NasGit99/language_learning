@@ -7,7 +7,7 @@ import os
 ## This will be changed later to import from github
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/language_modifier/')))
 
-from language_translator import translate_text
+from src.language_modifier.language_translator import translate_text
 
 class TestTranslateText(unittest.IsolatedAsyncioTestCase):
     async def test_translate(self):

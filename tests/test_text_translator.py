@@ -9,7 +9,7 @@ import glob
 ## This will be changed later to import from github or another method
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/language_modifier/')))
 
-from text_translator import *
+from src.language_modifier.text_file_translator import *
 
 test_file_1 ="testfile.txt"
 test_language_1 = "Spanish"

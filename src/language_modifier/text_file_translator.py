@@ -1,5 +1,6 @@
-from language_translator import *
+from src.language_modifier.language_translator import *
 import os
+import asyncio
 
 def read_txt_file(file_path):
     try:
@@ -63,10 +64,4 @@ def create_new_file(file_path, target_lang_code):
             for line in content:
                 file.write(line + '\n')
 
-if __name__ == "__main__":
-    # ToDo either in the UI or CLI, add code so user can check lang codes. 
-    # ToDo add code to also validate file in this step and make sure the path is correct before proceeding
-    raw_file = input("Type the name of your file:")
-    lang_code = input("Type the name of the language you want to translate the file to: ")
 
-    create_new_file(raw_file,lang_code)

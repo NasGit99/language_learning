@@ -1,12 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-import sys
-import os
 from src.language_modifier.language_translator import *
 from src.language_modifier.language_code_resource import *
 from src.user.user_login import create_login, create_signup
 from src.user.user_translations import text_history, saved_txt
 from datetime import datetime
 from src.db.db_functions import *
+import asyncio
 
 main_bp = Blueprint("main", __name__, template_folder='../pages')
 
