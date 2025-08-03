@@ -6,7 +6,7 @@ from templates.blueprints.main_bp import main_bp
 from templates.blueprints.file_translation_bp import file_translation_bp
 
 def create_app(test_config=None):
-    UPLOAD_FOLDER = os.path.join(os.getcwd(), 'flask_uploads')  # e.g., C:\Users\nas30\project\flask_uploads
+    UPLOAD_FOLDER = os.path.join(os.getcwd(), 'flask_uploads')
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     instance_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'instance'))
     app = Flask(__name__, instance_path=instance_path)

@@ -3,6 +3,9 @@ from src.language_modifier.text_file_translator import create_new_file
 from src.language_modifier.language_code_resource import create_lang_codes
 import os
 from werkzeug.utils import secure_filename
+from datetime import datetime
+from src.user.user_translations import saved_files
+from src.db.db_functions import insert_data
 
 file_translation_bp = Blueprint("file_translation", __name__, template_folder='../pages')
 # I will update these extensions as more file functionality is introduced
@@ -38,6 +41,8 @@ def upload_file():
 
 def translate_text_files():
     lang_codes = create_lang_codes()
+    username = session.get('username')
+
 
     if request.method == 'POST':
         file_path = upload_file()
@@ -45,9 +50,15 @@ def translate_text_files():
             return redirect(url_for('file_translation.translate_text_files'))
         file = os.path.basename(file_path)
         target_language = request.form['target_language']
-        # We will return the translated file object here
         translated_file = create_new_file(file, target_language)
-        # ToDO: Add code so users can also download
+            
+        if username:
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            values = (username,file, translated_file,target_language, timestamp)
+            query = saved_files()
+            insert_data(query,values)
+            pass
+
         return send_from_directory(
             directory=current_app.config["UPLOAD_FOLDER"],
             path=translated_file,

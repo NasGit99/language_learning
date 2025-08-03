@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from src.language_modifier.language_translator import *
 from src.language_modifier.language_code_resource import *
 from src.user.user_login import create_login, create_signup
-from src.user.user_translations import text_history, saved_txt
+from src.user.user_translations import text_history
 from datetime import datetime
 from src.db.db_functions import *
 import asyncio
@@ -61,19 +61,17 @@ def logout():
 def process_text():
     lang_codes = create_lang_codes()
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
 
+    user_text =''
+    transformed_text= ''
+    target_language =''
+    
     if request.method == "POST":
         user_text = request.form['user_text']
         target_language = request.form['target_language']
-        return redirect(url_for('main.process_text', user_text=user_text, target_language=target_language))
 
-    user_text = request.args.get('user_text', '')
-    target_language = request.args.get('target_language', '')
-    transformed_text = ''
-
-    if user_text and target_language:
-        transformed_text = asyncio.run(translate_text(user_text, target_language))
+        if user_text and target_language:
+            transformed_text = asyncio.run(translate_text(user_text, target_language))
     
     username = session.get('username')
     

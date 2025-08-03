@@ -40,13 +40,13 @@ def create_new_file(file_path, target_lang_code):
 
     output_file = f"{target_lang_code}_{file_path}"
     content = translate_file(file_path, target_lang_code)
-
+    full_path = os.path.join(current_app.config['UPLOAD_FOLDER'], output_file)
+    
     # Prevents files that do not exist from being entered
     if content is None:
         return None
     if content:
         try:
-            full_path = os.path.join(current_app.config['UPLOAD_FOLDER'], output_file)
             with open (full_path,"x", encoding="utf-8") as file:
                 for line in content:
                     file.write(line + '\n')
