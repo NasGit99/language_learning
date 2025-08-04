@@ -4,6 +4,7 @@ import os
 
 from templates.blueprints.main_bp import main_bp 
 from templates.blueprints.file_translation_bp import file_translation_bp
+from templates.blueprints.user_profile_bp import user_profile_bp
 
 def create_app(test_config=None):
     UPLOAD_FOLDER = os.path.join(os.getcwd(), 'flask_uploads')
@@ -13,7 +14,9 @@ def create_app(test_config=None):
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     app.register_blueprint(main_bp)
     app.register_blueprint(file_translation_bp)
-    app.config.from_mapping(SECRET_KEY ='dev')    
+    app.register_blueprint(user_profile_bp)
+    app.config.from_mapping(SECRET_KEY ='dev')
+    ALLOWED_EXTENSIONS = {'txt'}    
 
     if test_config is None:
         app.config.from_pyfile('config.py', silent=True)

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block header %}
+  <h1>Language Translations!</h1>
+{% endblock %}
+
+{% block content %}
+ <style>
+    table {
+        width: 100%; 
+        border-collapse: collapse; 
+    }
+    th, td {
+        border: 1px solid black; 
+        padding: 8px; 
+        text-align: left; 
+    }
+  </style>
+
+
+  {% if profile %}
+    <table>
+      <tr>
+          <th>Username</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+      </tr>
+      <tr>
+          <td>{{ profile[0] }}</td>
+          <td>{{ profile[1] }}</td>
+          <td>{{ profile[2] }}</td>
+          <td>{{ profile[3] }}</td>
+      </tr>
+    </table>
+  {% else %}
+    <p>No results found.</p>
+  {% endif %}
+
+{% endblock %}

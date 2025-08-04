@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from src.language_modifier.language_translator import *
 from src.language_modifier.language_code_resource import *
 from src.user.user_login import create_login, create_signup
-from src.user.user_translations import text_history
+from src.user.user_translations import text_history_query
 from datetime import datetime
 from src.db.db_functions import *
 import asyncio
@@ -77,7 +77,7 @@ def process_text():
     
     if username:
         values = (username, user_text, transformed_text, timestamp)
-        query = text_history()
+        query = text_history_query()
 
         insert_data(query,values)
         pass

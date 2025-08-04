@@ -4,16 +4,16 @@ from src.language_modifier.language_code_resource import create_lang_codes
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from src.user.user_translations import saved_files
+from src.user.user_translations import saved_files_query
 from src.db.db_functions import insert_data
 
 file_translation_bp = Blueprint("file_translation", __name__, template_folder='../pages')
 # I will update these extensions as more file functionality is introduced
-ALLOWED_EXTENSIONS = {'txt'}
+
 
 def allowed_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+           filename.rsplit('.', 1)[1].lower() in current_app.config["ALLOWED_EXTENSIONS"]
 
 def upload_file():
     
@@ -55,7 +55,7 @@ def translate_text_files():
         if username:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             values = (username,file, translated_file,target_language, timestamp)
-            query = saved_files()
+            query = saved_files_query()
             insert_data(query,values)
             pass
 
