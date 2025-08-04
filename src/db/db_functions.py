@@ -4,6 +4,12 @@ def retrieve_data(query,column):
     db  = Database()
     result = db.execute_query_fetch_one(query, (column,))
     return result
+
+def retrieve_all(query,column):    
+    db  = Database()
+    result = db.execute_query_fetch_all(query, (column,))
+    return result
+
    
 def insert_data(query,values):
     db = Database()

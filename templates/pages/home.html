@@ -19,9 +19,10 @@
       <option value="{{ code }}" {% if target_language == code %}selected{% endif %}>{{ name.capitalize() }}</option>
     {% endfor %}
   </select>
+  
 
     <h2>Enter your source text here</h2>
-    <textarea name="user_text" placeholder="Enter text here"
+    <textarea name="user_text" placeholder="Enter text here" required
           style="width: 300px; height: 150px; resize: none;">{{ user_text or '' }}</textarea>
 
     <br><br>

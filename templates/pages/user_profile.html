@@ -7,18 +7,6 @@
 {% endblock %}
 
 {% block content %}
- <style>
-    table {
-        width: 100%; 
-        border-collapse: collapse; 
-    }
-    th, td {
-        border: 1px solid black; 
-        padding: 8px; 
-        text-align: left; 
-    }
-  </style>
-
 
   {% if profile %}
     <table>
@@ -29,14 +17,67 @@
           <th>Email</th>
       </tr>
       <tr>
-          <td>{{ profile[0] }}</td>
-          <td>{{ profile[1] }}</td>
-          <td>{{ profile[2] }}</td>
-          <td>{{ profile[3] }}</td>
+        {% for row in profile %}
+          <td>{{ row[0] }}</td>
+          <td>{{ row[1] }}</td>
+          <td>{{ row[2] }}</td>
+          <td>{{ row[3] }}</td>
       </tr>
     </table>
+    {% endfor %}
   {% else %}
     <p>No results found.</p>
   {% endif %}
+  <p></p>
+  <a href="/update_profile">Update User Details</a>
+
+
+  <p>Translation and file history currently shows the last 15 of each.</p>
+
+  <h3>Translation History</h3>
+    {% if translation_history %}
+    <table>
+      <tr>
+      <th>Source Text</th>
+      <th>Destination Text</th>
+      <th>Target Language</th>
+      <th>Timestamp</th>
+      </tr>
+
+      <tr>
+        {% for row in translation_history%}
+        <td>{{row[0]}}</td>
+        <td>{{row[1]}}</td>
+        <td>{{row[2]}}</td>
+        <td>{{row[3]}}</td>
+      </tr>
+      {% endfor %}
+    {% else %}
+      <p>No results found.</p>
+    {% endif %}
+    </table>
+    
+    {% if file_translation_history %}
+    <h3>Translated Files</h3>
+    <table>
+      <tr>
+        <th>Original Filename</th>
+        <th>Translated Filename</th>
+        <th>Target Language</th>
+        <th>Timestamp</th>
+      </tr>
+
+      <tr>
+        {% for row in file_translation_history%}
+        <td>{{row[0]}}</td>
+        <td>{{row[1]}}</td>
+        <td>{{row[2]}}</td>
+        <td>{{row[3]}}</td>
+      </tr>
+      {% endfor %}
+    {% else %}
+      <p>No results found.</p>
+    {% endif %}
+    </table>
 
 {% endblock %}

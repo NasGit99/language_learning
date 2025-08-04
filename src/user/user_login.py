@@ -139,7 +139,7 @@ def create_login(username,password):
         if user_result is None:
             print("Username not found")
             return None
-
+        print(user_result)
         username = user_result[0]
 
         print("Username found: ", username)

@@ -65,18 +65,22 @@ def process_text():
     user_text =''
     transformed_text= ''
     target_language =''
+    target_language_name =''
     
     if request.method == "POST":
         user_text = request.form['user_text']
-        target_language = request.form['target_language']
+        target_language_code = request.form['target_language']
+        target_language_name = lang_codes[target_language_code].capitalize()
 
-        if user_text and target_language:
-            transformed_text = asyncio.run(translate_text(user_text, target_language))
+
+        if user_text and target_language_code:
+            transformed_text = asyncio.run(translate_text(user_text, target_language_code))
+            print(transformed_text)
     
     username = session.get('username')
     
     if username:
-        values = (username, user_text, transformed_text, timestamp)
+        values = (username, user_text, transformed_text, target_language_name, timestamp)
         query = text_history_query()
 
         insert_data(query,values)

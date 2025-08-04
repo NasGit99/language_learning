@@ -49,12 +49,13 @@ def translate_text_files():
         if not file_path:
             return redirect(url_for('file_translation.translate_text_files'))
         file = os.path.basename(file_path)
-        target_language = request.form['target_language']
-        translated_file = create_new_file(file, target_language)
+        target_language_code = request.form['target_language']
+        target_language_name = lang_codes[target_language_code].capitalize()
+        translated_file = create_new_file(file, target_language_code)
             
         if username:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            values = (username,file, translated_file,target_language, timestamp)
+            values = (username,file, translated_file,target_language_name, timestamp)
             query = saved_files_query()
             insert_data(query,values)
             pass

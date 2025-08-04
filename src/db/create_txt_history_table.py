@@ -8,6 +8,7 @@ def create_txt_history_table():
     username VARCHAR(50) NOT NULL,
     src_txt TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     dst_txt TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    target_lang TEXT,
     submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );"""
    db.execute_query(query)

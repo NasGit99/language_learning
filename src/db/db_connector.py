@@ -47,7 +47,31 @@ class Database():
     finally:
         if cursor:
             cursor.close()
-      
+#ToDO: I will condense these two functions fetch_all and fetch_one later
+   def execute_query_fetch_all(self, sql, values=None):
+    if Database.connection is None:
+        print("Error: No active connection")
+        return None
+    try:
+        cursor = Database.connection.cursor()
+        if values:
+            cursor.execute(sql, values)
+        else:
+            cursor.execute(sql)
+        result = cursor.fetchall()
+    except Exception:
+        logging.error("Failed to execute query: %s", sql)
+        logging.error("With values: %s", values)
+        logging.exception("Exception occurred during cursor.execute()")
+        return None
+    else:
+        affected = cursor.rowcount
+        logging.info(f"Select query executed successfully. Rows affected: {affected}")
+        return result
+    finally:
+        if cursor:
+            cursor.close()
+ 
    def execute_query_fetch_one(self, sql, values=None):
     if Database.connection is None:
         print("Error: No active connection")
@@ -58,7 +82,7 @@ class Database():
             cursor.execute(sql, values)
         else:
             cursor.execute(sql)
-        result = cursor.fetchone()  # fetch the single row
+        result = cursor.fetchone()
     except Exception:
         logging.error("Failed to execute query: %s", sql)
         logging.error("With values: %s", values)
