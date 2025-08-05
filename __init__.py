@@ -1,5 +1,4 @@
 from flask import Flask, render_template
-import sys
 import os
 
 from templates.blueprints.main_bp import main_bp 
@@ -11,12 +10,15 @@ def create_app(test_config=None):
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     instance_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'instance'))
     app = Flask(__name__, instance_path=instance_path)
+    
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
+    app.config.from_mapping(SECRET_KEY ='dev')
+    app.config["ALLOWED_EXTENSIONS"] = {'txt'}   
+
     app.register_blueprint(main_bp)
     app.register_blueprint(file_translation_bp)
-    app.register_blueprint(user_profile_bp)
-    app.config.from_mapping(SECRET_KEY ='dev')
-    app.config["ALLOWED_EXTENSIONS"] = {'txt'}    
+    app.register_blueprint(user_profile_bp) 
 
     if test_config is None:
         app.config.from_pyfile('config.py', silent=True)

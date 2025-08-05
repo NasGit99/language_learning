@@ -6,7 +6,7 @@ from flask import current_app
 def read_txt_file(file_path):
     try:
         print(file_path)
-        with open(file_path,"r") as file:
+        with open(file_path,"r", encoding="utf8") as file:
             # Handles multi line files and saves it as a list
             lines = file.readlines()
             if not lines:
