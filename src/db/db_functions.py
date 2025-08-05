@@ -1,16 +1,15 @@
 from db_connector import *
 
-def retrieve_data(query,column):    
+def retrieve_data(query,column,one_row=True):    
     db  = Database()
-    result = db.execute_query_fetch_one(query, (column,))
+    result = db.execute_query_fetch_data(query, (column,),one_row)
     return result
 
 def retrieve_all(query,column):    
     db  = Database()
-    result = db.execute_query_fetch_all(query, (column,))
+    result = db.execute_query_fetch_data(query, (column,))
     return result
 
-   
 def insert_data(query,values):
     db = Database()
     db.execute_query(query,values)
