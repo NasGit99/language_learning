@@ -33,7 +33,7 @@ def upload_file():
             return None
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file_path = (filename)
+            file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
             return file_path
 

@@ -3,10 +3,12 @@ import os
 import asyncio
 from flask import current_app
 
+
+
 def read_txt_file(file_path):
+    upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], file_path)
     try:
-        print(file_path)
-        with open(file_path,"r", encoding="utf8") as file:
+        with open(upload_path,"r", encoding="utf8") as file:
             # Handles multi line files and saves it as a list
             lines = file.readlines()
             if not lines:
@@ -40,14 +42,14 @@ def create_new_file(file_path, target_lang_code):
 
     output_file = f"{target_lang_code}_{file_path}"
     content = translate_file(file_path, target_lang_code)
-    full_path = os.path.join(current_app.config['UPLOAD_FOLDER'], output_file)
+    full_output_path = os.path.join(current_app.config['UPLOAD_FOLDER'], output_file)
     
     # Prevents files that do not exist from being entered
     if content is None:
         return None
     if content:
         try:
-            with open (full_path,"x", encoding="utf-8") as file:
+            with open (full_output_path,"x", encoding="utf-8") as file:
                 for line in content:
                     file.write(line + '\n')
         except FileExistsError:
@@ -58,12 +60,12 @@ def create_new_file(file_path, target_lang_code):
             base_name, ext = os.path.splitext(output_file)
 
             # Keep checking if the file exists, appending a number until it doesn't
-            while os.path.exists(full_path):
+            while os.path.exists(full_output_path):
                 output_file = f"{base_name}_{counter}{ext}"
                 counter += 1
             
             # Create and write to the new unique file name
-            with open(full_path, "x", encoding="utf-8") as file:
+            with open(full_output_path, "x", encoding="utf-8") as file:
                 for line in content:
                     file.write(line + '\n')
     return os.path.basename(output_file)
