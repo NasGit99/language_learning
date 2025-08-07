@@ -27,15 +27,25 @@ def translate_file(file_path, target_lang_code):
     if lines is None:
         return None
 
-    translated_text=[]
+    raw_file =""
+
+    # I have to transform the list into a string to send one single api request to improve processing
 
     for line in lines:
-        # Ignores blank lines
-        if not line.strip():
-            continue
-        translated_text.append(line.strip())
-        translated_text.append("Translation: " + asyncio.run(translate_text(line,target_lang_code)))
-    return translated_text
+        raw_file += line + "|"
+
+    translated_text = asyncio.run(translate_text(raw_file, target_lang_code))
+    translated_lines = [line.strip() for line in translated_text.split("|")]
+    
+    content = []
+
+    content = []
+    for original, translated in zip(lines, translated_lines):
+        content.append(original.strip())
+        content.append("Translation: " + translated.strip())
+        content.append("")
+
+    return content
 
 def create_new_file(file_path, target_lang_code):
     # Use the old file name and append the target language for naming
