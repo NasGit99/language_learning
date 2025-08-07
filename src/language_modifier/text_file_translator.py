@@ -38,8 +38,6 @@ def translate_file(file_path, target_lang_code):
     translated_lines = [line.strip() for line in translated_text.split("|")]
     
     content = []
-
-    content = []
     for original, translated in zip(lines, translated_lines):
         content.append(original.strip())
         content.append("Translation: " + translated.strip())
