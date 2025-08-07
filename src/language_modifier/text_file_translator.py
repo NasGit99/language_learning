@@ -28,9 +28,8 @@ def translate_file(file_path, target_lang_code):
         return None
 
     raw_file =""
-
+    
     # I have to transform the list into a string to send one single api request to improve processing
-
     for line in lines:
         raw_file += line + "|"
 
@@ -39,10 +38,12 @@ def translate_file(file_path, target_lang_code):
     
     content = []
     for original, translated in zip(lines, translated_lines):
-        content.append(original.strip())
+        if not original.strip():
+            continue
+        content.append(original)
+        if not translated.strip():
+            continue
         content.append("Translation: " + translated.strip())
-        content.append("")
-
     return content
 
 def create_new_file(file_path, target_lang_code):
@@ -51,7 +52,6 @@ def create_new_file(file_path, target_lang_code):
     output_file = f"{target_lang_code}_{file_path}"
     content = translate_file(file_path, target_lang_code)
     full_output_path = os.path.join(current_app.config['UPLOAD_FOLDER'], output_file)
-    
     # Prevents files that do not exist from being entered
     if content is None:
         return None
@@ -63,13 +63,16 @@ def create_new_file(file_path, target_lang_code):
         except FileExistsError:
             print(f"Error: The file {target_lang_code}_{file_path} already exists. Creating a new file")
 
-    else:       # If the file already exists, append a number to the file name
+     # If the file already exists, append a number to the file name
+    if FileExistsError:      
             counter = 1
             base_name, ext = os.path.splitext(output_file)
 
             # Keep checking if the file exists, appending a number until it doesn't
             while os.path.exists(full_output_path):
                 output_file = f"{base_name}_{counter}{ext}"
+                # Redefining the full output path so it doesnt save over the original file
+                full_output_path = os.path.join(current_app.config['UPLOAD_FOLDER'], output_file)
                 counter += 1
             
             # Create and write to the new unique file name
