@@ -69,4 +69,3 @@ def translate_text_files():
     return render_template('document_translation.html',
                            languages=lang_codes,
                            )
-

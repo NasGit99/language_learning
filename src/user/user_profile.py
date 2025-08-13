@@ -9,3 +9,15 @@ def user_translations_query():
 def user_file_history_query():
     query ="select original_file_name, translated_file_name, translated_lang, submitted_at from users_saved_files where username = %s Limit 15"
     return query
+
+def update_profile_query(column):
+    query =f"UPDATE USERS SET {column} = %s where username =%s;"
+    return query
+
+def update_translation_username():
+    query ="Update users_txt_history set username = %s where username = %s;"
+    return query
+
+def update_files_username():
+    query ="Update users_saved_files set username = %s where username = %s;"
+    return query

@@ -86,6 +86,22 @@ def validate_email(email):
         else:
             break 
     return email
+def user_validator(registered_user,password):
+    password_result = retrieve_data(retrieve_password_query(), registered_user)
+            
+    if password_result is None:
+        print("Could not find password, try again")
+        # Future iterations could include a password attempt
+        return None
+
+    stored_hash = password_result[0]
+    
+    if not decrypt_hash(password,stored_hash):
+        print("Incorrect password, try again")
+        return None
+    else:
+        print ("Successful login")
+    return registered_user
 
 def create_signup(username,first_name,last_name, email, password):
         errors = {}
@@ -147,18 +163,6 @@ def create_login(username,password):
         break
 
     while True:
-            password_result = retrieve_data(retrieve_password_query(), registered_user)
+        validated_user = user_validator(registered_user,password)
+        return validated_user
             
-            if password_result is None:
-                print("Could not find password, try again")
-                # Future iterations could include a password attempt
-                return None
-
-            stored_hash = password_result[0]
-            
-            if not decrypt_hash(password,stored_hash):
-                print("Incorrect password, try again")
-                return None
-            else:
-                print ("Successful login")
-            return registered_user

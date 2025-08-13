@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block header %}
+  <h1>Language Translations!</h1>
+{% endblock %}
+
+{% block content %}
+<h3>Update user profile</h3>
+{% if updated_fields[0] %}
+{{updated_fields[0].capitalize()}} updated
+{% endif %}
+
+{% if updated_fields[1] %}
+{{updated_fields[1].capitalize()}} updated
+{% endif %}
+
+{% if updated_fields[2] %}
+{{updated_fields[2].capitalize()}} updated
+{% endif %}
+
+{% if updated_fields[3] %}
+{{updated_fields[3].capitalize()}} updated
+{% endif %}
+
+{% if errors %}
+{{errors}}
+{% endif %}
+
+{% if profile %}
+{% for row in profile %}
+
+<form method="POST" action ='/update_profile'> 
+<label for="username">Username:</label><br />
+  <input type="text" id="username" name="username" value={{ session.username }} required maxlength="16" /><br /><br />
+
+<label for="first_name">First Name</label><br />
+    <input type="text" id="first_name" name="first_name" value ={{ row[1]}}><br / ><br />
+
+    
+<label for="last_name">Last Name</label><br />
+    <input type="text" id="last_name" name="last_name" value ={{ row[2]}}><br / ><br />
+
+<label for="email">Email</label><br />
+    <input type="text" id="email" name="email" value ={{ row[3]}}><br / ><br />
+
+<label for="old_password">Old Password:</label><br />
+  <input type="password" id="old_password" name="old_password"  /><br /><br />
+
+<label for="new_password">New Password:</label><br />
+  <input type="password" id="new_password" name="new_password"  /><br /><br />
+
+  {% endfor %}
+  {% endif %}
+
+  <input type="submit" value="Save" />
+    
+</form>
+{% endblock %}
+
+
+
+
