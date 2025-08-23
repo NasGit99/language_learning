@@ -1,6 +1,6 @@
 from flask import Flask,jsonify
 import os
-from flask_jwt_extended import JWTManager, get_jwt_identity, jwt_required
+from flask_jwt_extended import JWTManager
 
 
 from templates.blueprints.main_bp import main_bp 
@@ -36,12 +36,6 @@ def create_app(test_config=None):
         pass
     
     return app
-
-@jwt_required()
-def protected():
-    # Access the identity of the current user with get_jwt_identity
-    current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200
 
 if __name__ == "__main__":
    program = create_app()

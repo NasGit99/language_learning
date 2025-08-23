@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, session,send_from_directory,current_app
+from flask import Blueprint, request, jsonify, session,send_from_directory,current_app
 from flask_jwt_extended import jwt_required
 from src.language_modifier.text_file_translator import create_new_file
 from src.language_modifier.language_code_resource import create_lang_codes
@@ -22,8 +22,7 @@ def upload_file():
          
         if request.method == "POST":
             file = request.files['file']
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
+
         if file.filename == '':
             logging.info("File field is empty")
             return None, "File field is empty"
@@ -38,7 +37,7 @@ def upload_file():
             file.save(file_path)
             return file_path, None
         
-@jwt_required
+@jwt_required()
 @file_translation_bp.route('/translate_document', methods=['POST'] )
 def translate_text_files():
     lang_codes = create_lang_codes()
@@ -66,7 +65,7 @@ def translate_text_files():
             "download_name" : translated_file
             })
 
-@jwt_required
+@jwt_required()
 @file_translation_bp.route('/download_file', methods = ['GET'])
 def download_file():
 
