@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, session,request
-from src.user.user_profile import profile_data_query, user_translations_query,user_file_history_query, update_profile_query, update_files_username, update_translation_username
+from src.user.user_profile_query import profile_data_query, user_translations_query,user_file_history_query, update_profile_query, update_files_username, update_translation_username
 from src.db.db_functions import insert_data, retrieve_all
 from src.user.user_login import user_validator, hash_password
 
