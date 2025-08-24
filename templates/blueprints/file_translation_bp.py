@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, session,send_from_directory,current_app
 from flask_jwt_extended import jwt_required
-from src.language_modifier.text_file_translator import create_new_file
+from src.language_modifier.text_file_translator import FileTranslator
 from src.language_modifier.language_code_resource import create_lang_codes
 import os
 from werkzeug.utils import secure_filename
@@ -49,8 +49,13 @@ def translate_text_files():
             return jsonify(error)
         file = os.path.basename(file_path)
         target_language_code = request.form['target_language']
-        target_language_name = lang_codes[target_language_code].capitalize()
-        translated_file = create_new_file(file, target_language_code)
+        
+        for code, name in lang_codes.items():
+            if target_language_code == code:
+                target_language_name = name.capitalize()
+
+        translator = FileTranslator(file, target_language_code)
+        translated_file = translator.create_new_file()
             
         if username:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -60,16 +65,13 @@ def translate_text_files():
             pass
 
         return jsonify({
-            "path" : file_path,
-            "file" : translated_file,
+            "original file" : file,
             "download_name" : translated_file
             })
 
 @jwt_required()
 @file_translation_bp.route('/download_file', methods = ['GET'])
 def download_file():
-
-    #ToDo: Validate user retreiving the files
 
     filename = request.args.get('file')
     
@@ -78,8 +80,6 @@ def download_file():
     
     verified_filename = secure_filename(filename)
 
-     
-        
     return send_from_directory(
         directory =current_app.config['UPLOAD_FOLDER'] ,
         path=verified_filename,

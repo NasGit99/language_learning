@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup as bs
 from googletrans import LANGUAGES
 
 def create_lang_codes():
