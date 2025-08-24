@@ -1,66 +1,63 @@
 import unittest
-from unittest.mock import patch
-import sys
 import os
-import time
 import glob
+import time
+import sys
 
-# Add the 'src' directory to the sys.path to make all modules inside it accessible.
-## This will be changed later to import from github or another method
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/language_modifier/')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
-from src.language_modifier.text_file_translator import *
+from src.language_modifier.text_file_translator import FileTranslator
 
-test_file_1 ="testfile.txt"
-test_language_1 = "Spanish"
-test_file_2 ="testfile2.txt"
-test_language_2= "Hindi"
-test_file_3 ="testfile3.txt"
+test_file_1 = "testfile.txt"
+test_file_2 = "testfile2.txt"
+test_file_3 = "testfile3.txt"
+
+test_dir = os.path.join(os.path.dirname(__file__), "") 
+os.makedirs(test_dir, exist_ok=True)
 
 def create_txt_file():
-    with open(test_file_1, "w") as file:
-        file.write("This is a test file")
-    
-    with open(test_file_2, "w") as file:
-        file.write("This is a test file\n This is the second line for the test file \n This is the third line")
-        
-    with open(test_file_3, "w") as file:
-        file.write("This is a test file\n  \n There should be a blank above this that was skipped")
-
+    with open(os.path.join(test_dir, test_file_1), "w") as f:
+        f.write("This is a test file")
+    with open(os.path.join(test_dir, test_file_2), "w") as f:
+        f.write("This is a test file\nSecond line\nThird line")
+    with open(os.path.join(test_dir, test_file_3), "w") as f:
+        f.write("This is a test file\n\nBlank line above this")
 
 def remove_test_files():
-    for file_path in glob.glob("*.txt"):
-        os.remove(file_path)
-        print(f"Removed: {file_path}")
+    for f in glob.glob(os.path.join(test_dir, "*.txt")):
+        os.remove(f)
 
 class TestUserInput(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        create_txt_file()
+        cls.file_1 = FileTranslator(test_file_1, "Spanish", test_dir)
+        cls.fake_file = FileTranslator("FakeFile.txt", "Spanish", test_dir)
+        cls.file_2 = FileTranslator(test_file_2, "Hindi", test_dir)
+        cls.file_3 = FileTranslator(test_file_3, "Hindi", test_dir)
 
     def test_file_translation(self):
-        create_new_file(test_file_1,test_language_1)     
-        self.assertTrue(os.path.exists('Spanish_testfile.txt'))
+        output = self.file_1.create_new_file()
+        self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
 
     def test_file_exists(self):
-        create_new_file(test_file_1,test_language_1)
-        self.assertRaises(FileExistsError)
-        self.assertTrue(os.path.exists('Spanish_testfile.txt'))
-    
+        self.file_1.create_new_file()
+        output = self.file_1.create_new_file()
+        self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
+
     def test_file_not_valid(self):
-        create_new_file("FakeFile.txt",test_language_1)
-        self.assertRaises(FileNotFoundError)
-    
+        output = self.fake_file.create_new_file()
+        self.assertIsNone(output)  
+
     def test_multi_line_file(self):
-        create_new_file(test_file_2,test_language_2)
-        self.assertTrue(os.path.exists('Hindi_testfile2.txt'))
-    
+        output = self.file_2.create_new_file()
+        self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
+
     def test_blank_line(self):
-        create_new_file(test_file_3,test_language_2)
-        self.assertTrue(os.path.exists('Hindi_testfile3.txt'))
+        output = self.file_3.create_new_file()
+        self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
 
-        
-    ## ToDo, Test multi line files
-
-if __name__ == '__main__':
-    create_txt_file()
+if __name__ == "__main__":
     unittest.main(exit=False)
     time.sleep(20)
     print("Deleting test files in 20 seconds")
