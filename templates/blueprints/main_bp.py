@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from src.language_modifier.language_translator import *
 from src.language_modifier.language_code_resource import *
 from flask_jwt_extended import create_access_token
-from src.user.user_login import create_login, create_signup
+from src.user.user_login import UserProfile
 from src.user.user_translation_query import text_history_query
 from datetime import datetime,timedelta
 
@@ -24,7 +24,9 @@ def signup():
         email = form['email']
         password = form['password']
 
-        user, errors = create_signup(username,first_name,last_name, email, password)
+        user = UserProfile(username, email, first_name, last_name, password)
+
+        user, errors = user.create_signup()
 
         if user:
             access_token = create_access_token(identity=username)
@@ -39,7 +41,7 @@ def login():
         username = form['username']
         password = form['password']
 
-        login_result = create_login(username, password)
+        login_result = UserProfile.create_login(username, password)
         # This is for if the user needs more tokens
         if login_result:
             access_token = create_access_token(identity=username, expires_delta=timedelta(hours=1))

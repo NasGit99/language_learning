@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template,request,jsonify
 from src.user.user_profile_query import profile_data_query, user_translations_query,user_file_history_query, update_profile_query, update_files_username, update_translation_username
 from src.db.db_functions import insert_data, retrieve_all
-from src.user.user_login import user_validator, hash_password
+from src.user.user_login import UserProfile
 from flask_jwt_extended import jwt_required,get_jwt_identity,create_access_token
 from datetime import timedelta
 import logging
@@ -49,9 +49,9 @@ def update_profile():
         new_password  = form.get('new_password')
 
         if new_password != old_password:
-            valid_user = user_validator(username,old_password)
+            valid_user = UserProfile.user_validator(username,old_password)
             if valid_user:
-                hashed_password = hash_password(new_password)
+                hashed_password = UserProfile.hash_password(new_password)
                 values = (hashed_password, username)
                 logging.info("Updating password")
                 insert_data(update_profile_query('password'),values)
@@ -93,7 +93,7 @@ def update_profile():
 
             new_access_token = create_access_token(identity=new_username, expires_delta=timedelta(hours=1))
             logging.info(f"New access token has been granted to {new_username}. Old username was {username}")
-            return jsonify ({"new_access_token(1 hour)": new_access_token,"updated_fields": updated_fields,
+            return jsonify ({"new_access_token(1 hour) due to name change": new_access_token,"updated_fields": updated_fields,
                             "msg": "Request a refresh token through the /login endpoint for longer access"})
         
         return jsonify({"updated_fields": updated_fields})
