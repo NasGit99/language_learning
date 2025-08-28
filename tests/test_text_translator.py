@@ -37,28 +37,28 @@ class TestUserInput(unittest.TestCase):
         cls.file_3 = FileTranslator(test_file_3, "Hindi", test_dir)
 
     def test_file_translation(self):
-        output = self.file_1.create_new_file()
+        output = self.file_1.generate_txt_file()
         self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
 
     def test_file_exists(self):
-        self.file_1.create_new_file()
-        output = self.file_1.create_new_file()
+        self.file_1.generate_txt_file()
+        output = self.file_1.generate_txt_file()
         self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
 
     def test_file_not_valid(self):
-        output = self.fake_file.create_new_file()
+        output = self.fake_file.generate_txt_file()
         self.assertIsNone(output)  
 
     def test_multi_line_file(self):
-        output = self.file_2.create_new_file()
+        output = self.file_2.generate_txt_file()
         self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
 
     def test_blank_line(self):
-        output = self.file_3.create_new_file()
+        output = self.file_3.generate_txt_file()
         self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
 
 if __name__ == "__main__":
     unittest.main(exit=False)
-    time.sleep(20)
     print("Deleting test files in 20 seconds")
+    time.sleep(20)
     remove_test_files()
