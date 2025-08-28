@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, session,send_from_directory,current_app
 from flask_jwt_extended import jwt_required
-from src.language_modifier.text_file_translator import FileTranslator
+from src.language_modifier.text_file_translator import TextFileTranslator
 from src.language_modifier.language_code_resource import create_lang_codes
 import os
 from werkzeug.utils import secure_filename
@@ -54,8 +54,8 @@ def translate_text_files():
             if target_language_code == code:
                 target_language_name = name.capitalize()
 
-        translator = FileTranslator(file, target_language_code)
-        translated_file = translator.create_new_file()
+        translator = TextFileTranslator(file, target_language_code)
+        translated_file = translator.generate_txt_file()
             
         if username:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

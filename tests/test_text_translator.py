@@ -6,7 +6,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
-from src.language_modifier.text_file_translator import FileTranslator
+from src.language_modifier.text_file_translator import TextFileTranslator
 
 test_file_1 = "testfile.txt"
 test_file_2 = "testfile2.txt"
@@ -31,10 +31,10 @@ class TestUserInput(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         create_txt_file()
-        cls.file_1 = FileTranslator(test_file_1, "Spanish", test_dir)
-        cls.fake_file = FileTranslator("FakeFile.txt", "Spanish", test_dir)
-        cls.file_2 = FileTranslator(test_file_2, "Hindi", test_dir)
-        cls.file_3 = FileTranslator(test_file_3, "Hindi", test_dir)
+        cls.file_1 = TextFileTranslator(test_file_1, "Spanish", test_dir)
+        cls.fake_file = TextFileTranslator("FakeFile.txt", "Spanish", test_dir)
+        cls.file_2 = TextFileTranslator(test_file_2, "Hindi", test_dir)
+        cls.file_3 = TextFileTranslator(test_file_3, "Hindi", test_dir)
 
     def test_file_translation(self):
         output = self.file_1.generate_txt_file()

@@ -5,7 +5,7 @@ from flask import current_app
 from language_modifier.base_translator import *
 import logging
 
-class FileTranslator(TranslatorCore):
+class TextFileTranslator(TranslatorCore):
 
     def __init__(self, file_path, target_lang_code, upload_folder=None):
         super().__init__(file_path, target_lang_code)
