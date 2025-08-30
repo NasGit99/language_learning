@@ -16,7 +16,7 @@ def create_app(test_config=None):
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
     app.config.from_mapping(JWT_SECRET_KEY ='dev')
-    app.config["ALLOWED_EXTENSIONS"] = {'txt'}   
+    app.config["ALLOWED_EXTENSIONS"] = {'txt','csv'}   
 
     app.register_blueprint(main_bp)
     app.register_blueprint(file_translation_bp)

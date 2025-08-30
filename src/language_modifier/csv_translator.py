@@ -28,8 +28,9 @@ class CsvTranslator(TranslatorCore):
         return columns, rows
     
     def translate_csv(self):
+        self.file_validator()
 
-        columns, rows = self.file_validator(self.csv_reader)
+        columns, rows = self.csv_reader()
     
         rows_str = "\n".join(["||".join(row) for row in rows])
 
@@ -57,6 +58,9 @@ class CsvTranslator(TranslatorCore):
                 csvwriter = csv.writer(csvfile)       
                 csvwriter.writerow(columns)             
                 csvwriter.writerows(translated_rows)
+        return os.path.basename(self.output_file)
 
     def save_csv(self):
-        self.file_exists(self.create_csv_file)
+        self.file_exists()
+        translated_file = self.generate_csv()
+        return translated_file

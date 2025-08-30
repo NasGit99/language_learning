@@ -37,24 +37,24 @@ class TestUserInput(unittest.TestCase):
         cls.file_3 = TextFileTranslator(test_file_3, "Hindi", test_dir)
 
     def test_file_translation(self):
-        output = self.file_1.generate_txt_file()
+        output = self.file_1.save_txt_file()
         self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
 
     def test_file_exists(self):
-        self.file_1.generate_txt_file()
-        output = self.file_1.generate_txt_file()
-        self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
+        self.file_1.save_txt_file()
+
+        self.assertNotEqual(self.file_1.new_output_file, self.file_1.output_file)
 
     def test_file_not_valid(self):
-        output = self.fake_file.generate_txt_file()
-        self.assertIsNone(output)  
+        with self.assertRaises(FileNotFoundError):
+            self.fake_file.save_txt_file()
 
     def test_multi_line_file(self):
-        output = self.file_2.generate_txt_file()
+        output = self.file_2.save_txt_file()
         self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
 
     def test_blank_line(self):
-        output = self.file_3.generate_txt_file()
+        output = self.file_3.save_txt_file()
         self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
 
 if __name__ == "__main__":

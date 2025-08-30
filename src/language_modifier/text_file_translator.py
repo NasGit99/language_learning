@@ -3,12 +3,11 @@ import os
 import asyncio
 from flask import current_app
 from language_modifier.base_translator import *
-import logging
 
 class TextFileTranslator(TranslatorCore):
 
     def __init__(self, file_path, target_lang_code, upload_folder=None):
-        super().__init__(file_path, target_lang_code)
+        super().__init__(file_path, target_lang_code, upload_folder)
 
     def read_txt_file(self):
         with open(self.upload_path,"r", encoding="utf8") as file:
@@ -17,7 +16,10 @@ class TextFileTranslator(TranslatorCore):
             return lines
 
     def translate_file(self):
-        lines = self.file_validator(self.read_txt_file)
+
+        self.file_validator()
+        lines = self.read_txt_file()
+
         if lines is None:
             return None
 
@@ -49,7 +51,10 @@ class TextFileTranslator(TranslatorCore):
             with open (self.full_output_path,"x", encoding="utf-8") as file:
                     for line in content:
                         file.write(line + '\n')
-
+            return os.path.basename(self.output_file)
+            
     def save_txt_file(self):
-        self.file_exists(self.generate_txt_file)
+        self.file_exists()
+        translated_file = self.generate_txt_file()
+        return translated_file
 
