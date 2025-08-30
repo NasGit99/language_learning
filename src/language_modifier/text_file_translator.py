@@ -45,16 +45,16 @@ class TextFileTranslator(TranslatorCore):
     def generate_txt_file(self):
         content = self.translate_file()
         # Prevents files that do not exist from being entered
+        self.full_output_path= self.file_exists()
         if content is None:
             return None
         if content:
             with open (self.full_output_path,"x", encoding="utf-8") as file:
                     for line in content:
                         file.write(line + '\n')
-            return os.path.basename(self.output_file)
+            return os.path.basename(self.full_output_path)
             
     def save_txt_file(self):
-        self.file_exists()
         translated_file = self.generate_txt_file()
         return translated_file
 

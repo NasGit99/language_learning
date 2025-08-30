@@ -55,14 +55,17 @@ def translate_text_files():
             if target_language_code == code:
                 target_language_name = name.capitalize()
 
-        file_extension = os.path.splitext(file)[1]
+        file_extension = os.path.splitext(file)[1].lower().lstrip('.')
+
         if file_extension.lower() == 'txt':
             translator = TextFileTranslator(file, target_language_code)
             translated_file = translator.save_txt_file()
+            pass
 
-        if file_extension.lower() == 'csv':
+        elif file_extension.lower() == 'csv':
             translator = CsvTranslator(file, target_language_code)
             translated_file = translator.save_csv()
+            pass
        
         if username:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

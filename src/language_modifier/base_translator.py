@@ -37,7 +37,7 @@ class TranslatorCore():
     def file_exists(self):
 
         if not os.path.exists(self.output_file):
-            return
+            return self.output_file
         
         counter = 1
         base_name, ext = os.path.splitext(self.output_file)
@@ -45,7 +45,9 @@ class TranslatorCore():
         while os.path.exists(self.full_output_path):
             self.new_output_file = f"{base_name}_{counter}{ext}"
             # Redefining the full output path so it doesnt save over the original file
-            self.full_output_path = os.path.join(self.upload_folder, self.new_output_file)
+            self.full_output_path= os.path.join(self.upload_folder, self.new_output_file)
             counter += 1
+        return self.full_output_path
+        
 
       
