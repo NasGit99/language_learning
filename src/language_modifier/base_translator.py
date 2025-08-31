@@ -36,8 +36,8 @@ class TranslatorCore():
 
     def file_exists(self):
 
-        if not os.path.exists(self.output_file):
-            return self.output_file
+        if not os.path.exists(self.full_output_path):
+            return self.full_output_path
         
         counter = 1
         base_name, ext = os.path.splitext(self.output_file)
