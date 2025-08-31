@@ -5,9 +5,9 @@ import os
 
 # Add the 'src' directory to the sys.path to make all modules inside it accessible.
 ## This will be changed later to import from github or another method
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/language_modifier/')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '/src/language_modifier/')))
 
-from language_code_resource import validate_codes
+from language_modifier.language_code_resource import validate_codes
 
 class TestUserInput(unittest.TestCase):
 
