@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, session,send_from_directory,current_app
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from src.language_modifier.text_file_translator import TextFileTranslator
 from src.language_modifier.csv_translator import CsvTranslator
 from src.language_modifier.language_code_resource import create_lang_codes
@@ -42,7 +42,7 @@ def upload_file():
 @file_translation_bp.route('/translate_document', methods=['POST'] )
 def translate_text_files():
     lang_codes = create_lang_codes()
-    username = session.get('username')
+    username = get_jwt_identity()
 
     if request.method == 'POST':
         file_path, error = upload_file()
@@ -62,7 +62,7 @@ def translate_text_files():
             translated_file = translator.save_txt_file()
             pass
 
-        elif file_extension.lower() == 'csv':
+        if file_extension.lower() == 'csv':
             translator = CsvTranslator(file, target_language_code)
             translated_file = translator.save_csv()
             pass
