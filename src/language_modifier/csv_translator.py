@@ -52,15 +52,19 @@ class CsvTranslator(TranslatorCore):
     
     def generate_csv(self):
 
-        columns, translated_rows = self.translate_csv()   
+        columns, translated_rows = self.translate_csv()  
 
-        with open(self.full_output_path, 'x',encoding="utf-8",newline='') as csvfile:
-                csvwriter = csv.writer(csvfile)       
-                csvwriter.writerow(columns)             
-                csvwriter.writerows(translated_rows)
-        return os.path.basename(self.output_file)
+        self.full_output_path = self.file_exists()
+
+        if columns or translated_rows is None:
+            return None
+        if columns and translated_rows:
+            with open(self.full_output_path, 'x',encoding="utf-8",newline='') as csvfile:
+                    csvwriter = csv.writer(csvfile)       
+                    csvwriter.writerow(columns)             
+                    csvwriter.writerows(translated_rows)
+            return os.path.basename(self.full_output_path)
 
     def save_csv(self):
-        self.file_exists()
         translated_file = self.generate_csv()
         return translated_file
