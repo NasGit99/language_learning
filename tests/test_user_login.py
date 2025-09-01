@@ -6,7 +6,7 @@ import random
 import string
 import json
 
-from tests.conftest import client, credentials
+from tests.conftest import client
 
 # Add the 'src' directory to the sys.path to make all modules inside it accessible.
 ## This will be changed later to import from github or another method
@@ -101,23 +101,33 @@ class TestUserCreation(unittest.TestCase):
         self.assertIsNone(login_attempt)
 
 class TestJsonFields:
-    username = f"pancakes{random.randint(1,10000)}"
-    password = f"pancakes{random.randint(1,10000)}"
+    username = f"test{random.randint(1,10000)}"
+    password = f"test{random.randint(1,10000)}"
 
-    def test_create_user_json(self, client):
+    def profile_token(self,client):
+        tokens = self.create_token(client,self.username, self.password)
+        return tokens
+    
+    def create_user(self,client,username, password):
         response = client.post(
         "/signup",
         data=json.dumps({
-            "username": f"{self.username}",
+            "username": f"{username}",
             "first_name": "cakes",
             "last_name": "cake",
             "email": "darktest@gmail.com",
-            "password": f"{self.password}",
+            "password": f"{password}",
         }),
         content_type="application/json")
+        return response
+
+    def test_create_user_json(self, client):
+
+        response = self.create_user(client,self.username, self.password)
+       
         assert response.status_code == 200
 
-        token = response.get_json() 
+        token = self.profile_token(client)
 
         access_token = token["access_token"]
         assert access_token is not None
@@ -131,7 +141,7 @@ class TestJsonFields:
         }),
         content_type="application/json")
 
-        token = response.get_json()
+        token = self.profile_token(client) 
         access_token = token["access_token"]
         refresh_token = token["refresh_token"]
 
@@ -140,14 +150,12 @@ class TestJsonFields:
         assert refresh_token is not None
 
     def test_profile_json(self,client):
-        tokens = self.tokens(client)
-        access_token = tokens["access_token"]
-
+        token = self.profile_token(client) 
+        access_token = token["access_token"]
         response = client.get(
             "/profile",
             headers={"Authorization": f"Bearer {access_token}"}
         )
-
         assert response.status_code == 200
 
         data = response.get_json()
@@ -156,11 +164,81 @@ class TestJsonFields:
         assert "File_translation_history" in data
 
         print(data)
+
+    def update_profile(self,client,json,token):
+
+        response = client.patch(
+        "/update_profile",
+        headers={"Authorization": f"Bearer {token}"},
+        data = json,
+        content_type="application/json"
+          ) 
+        
+        msg = response.get_json()
+        print(msg)
+
+        return response    
+
+    def test_update_profile_badpw_json(self,client):
+        token = self.profile_token(client) 
+        access_token = token["access_token"]
+
+        data = json.dumps({
+            "new_password": f"{self.password}",
+        })
+        response = self.update_profile(client,data,access_token)
+
+        assert response.status_code == 400
+
+    def test_update_profile_goodpw_json(self, client):
+        username = f"test_{random.randint(1,10000)}"
+        old_password = "profiletest123"
+        new_password = "newpw123"
+
+        self.create_user(client,username,old_password)
+
+        tokens = self.create_token(client, username, old_password)
+        access_token = tokens["access_token"]
+
+        data = json.dumps({
+            "old_password": old_password,
+            "new_password": new_password
+        })
+        response = self.update_profile(client, data, access_token)
+        assert response.status_code == 200
     
-    def tokens(self,client):  
+    def test_update_profile_username_json(self, client):
+        old_username = f"test_{random.randint(1,1000)}"
+        password = "startpw123"
+        new_username = f"{old_username}_new"
+
+        self.create_user(client,old_username,password)
+
+        tokens = self.create_token(client, old_username, password)
+        access_token = tokens["access_token"]
+
+        data = json.dumps({"new_username": new_username})
+        response = client.patch(
+            "/update_profile",
+            headers={"Authorization": f"Bearer {access_token}"},
+            data=data,
+            content_type="application/json"
+        )
+
+        assert response.status_code == 200
+        resp_json = response.get_json()
+        assert "updated_fields" in resp_json
+        assert "username" in resp_json["updated_fields"]
+        assert "new_access_token(1 hour) due to name change" in resp_json
+        assert resp_json["msg"] == "Request a refresh token through the /login endpoint for longer access"
+
+        new_tokens = self.create_token(client, new_username, password)
+        assert "access_token" in new_tokens
+
+    def create_token(self,client,username,password):  
         response = client.post("/login", json={
-            "username": f"{self.username}",
-            "password": f"{self.password}"
+            "username": f"{username}",
+            "password": f"{password}"
         })
         assert response.status_code == 200
         data = response.get_json()

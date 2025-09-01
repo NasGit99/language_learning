@@ -1,7 +1,6 @@
 import pytest
 from language_learning import create_app
 import logging
-import random
 
 
 @pytest.fixture()
@@ -29,14 +28,6 @@ def remove_test_files():
 
     for f in glob.glob(os.path.join(test_dir, "*.txt")):
         os.remove(f)
-
-@pytest.fixture
-def credentials():
-    from test_user_login import TestJsonFields
-    username = TestJsonFields.username
-    password = TestJsonFields.password
-    return username, password
-
 
 @pytest.fixture(scope="session",autouse=True)
 def cleanup_files():

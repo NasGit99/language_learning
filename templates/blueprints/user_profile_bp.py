@@ -48,52 +48,58 @@ def update_profile():
         old_password  = form.get('old_password')
         new_password  = form.get('new_password')
 
-        if new_password != old_password:
-            valid_user = UserProfile.user_validator(username,old_password)
-            if valid_user:
-                hashed_password = UserProfile.hash_password(new_password)
-                values = (hashed_password, username)
-                logging.info("Updating password")
-                insert_data(update_profile_query('password'),values)
-                updated_fields.append("password")
-            else:
-                logging.info("Validation failed")
-                return jsonify("Validation failed"),400
-        if first_name != db_first_name:
-            logging.info(f"Updating first name to {first_name}")
-            values = (first_name, username)
-            insert_data(update_profile_query('first_name'),values)
-            updated_fields.append("first name")
-        if last_name != db_last_name:
-            logging.info(f"Updating last name to {last_name}")
-            values = (last_name, username)
-            insert_data(update_profile_query('last_name'),values)
-            updated_fields.append("last name")
-        if email != db_email:
-            logging.info(f"Updating email address to {email}")
-            values = (email, username)
-            insert_data(update_profile_query('email'),values)
-            updated_fields.append("email")
-  
-        if new_username != username:
-            user_values = (new_username, username)
-            # Updating the username associated with transactions so we can maintain the history
-            insert_data(update_translation_username(), user_values)
-            logging.info("Updating the translation history username")
+        if new_password and not old_password:
+            return jsonify("To update to a new password you need to send the old_password"), 400
+        if new_password:
+            if new_password != old_password:
+                valid_user = UserProfile.user_validator(username,old_password)
+                if valid_user:
+                    hashed_password = UserProfile.hash_password(new_password)
+                    values = (hashed_password, username)
+                    logging.info("Updating password")
+                    insert_data(update_profile_query('password'),values)
+                    updated_fields.append("password")
+                else:
+                    logging.info("Validation failed")
+                    return jsonify("Validation failed"),400
+        if first_name:
+            if first_name != db_first_name:
+                logging.info(f"Updating first name to {first_name}")
+                values = (first_name, username)
+                insert_data(update_profile_query('first_name'),values)
+                updated_fields.append("first name")
+        if last_name:
+            if last_name != db_last_name:
+                logging.info(f"Updating last name to {last_name}")
+                values = (last_name, username)
+                insert_data(update_profile_query('last_name'),values)
+                updated_fields.append("last name")
+        if email:
+            if email != db_email:
+                logging.info(f"Updating email address to {email}")
+                values = (email, username)
+                insert_data(update_profile_query('email'),values)
+                updated_fields.append("email")
+        if new_username:
+            if new_username != username:
+                user_values = (new_username, username)
+                # Updating the username associated with transactions so we can maintain the history
+                insert_data(update_translation_username(), user_values)
+                logging.info("Updating the translation history username")
 
-            insert_data(update_files_username(),user_values )
-            logging.info("Updating the file translation history username")
+                insert_data(update_files_username(),user_values )
+                logging.info("Updating the file translation history username")
 
-            insert_data(update_profile_query('username'),user_values)
-            logging.info(f"Updating the username to {new_username}")
+                insert_data(update_profile_query('username'),user_values)
+                logging.info(f"Updating the username to {new_username}")
 
-            # A new access token is given for username changes. 
-            # To retrieve user information please use new access token or get a refresh token
-            updated_fields.append("username")
+                # A new access token is given for username changes. 
+                # To retrieve user information please use new access token or get a refresh token
+                updated_fields.append("username")
 
-            new_access_token = create_access_token(identity=new_username, expires_delta=timedelta(hours=1))
-            logging.info(f"New access token has been granted to {new_username}. Old username was {username}")
-            return jsonify ({"new_access_token(1 hour) due to name change": new_access_token,"updated_fields": updated_fields,
-                            "msg": "Request a refresh token through the /login endpoint for longer access"})
-        
+                new_access_token = create_access_token(identity=new_username, expires_delta=timedelta(hours=1))
+                logging.info(f"New access token has been granted to {new_username}. Old username was {username}")
+                return jsonify ({"new_access_token(1 hour) due to name change": new_access_token,"updated_fields": updated_fields,
+                                "msg": "Request a refresh token through the /login endpoint for longer access"})
+            
         return jsonify({"updated_fields": updated_fields})
