@@ -4,7 +4,9 @@ import sys
 import os
 import random
 import string
-import time
+import json
+
+from tests.conftest import client, credentials
 
 # Add the 'src' directory to the sys.path to make all modules inside it accessible.
 ## This will be changed later to import from github or another method
@@ -98,7 +100,68 @@ class TestUserCreation(unittest.TestCase):
         login_attempt = UserProfile.create_login("testuser10234","test123")
         self.assertIsNone(login_attempt)
 
+class TestJsonFields:
+    username = f"pancakes{random.randint(1,10000)}"
+    password = f"pancakes{random.randint(1,10000)}"
 
-if __name__ == '__main__':
-    unittest.main(exit=False)
-    delete_test_users()
+    def test_create_user_json(self, client):
+        response = client.post(
+        "/signup",
+        data=json.dumps({
+            "username": f"{self.username}",
+            "first_name": "cakes",
+            "last_name": "cake",
+            "email": "darktest@gmail.com",
+            "password": f"{self.password}",
+        }),
+        content_type="application/json")
+        assert response.status_code == 200
+
+        token = response.get_json() 
+
+        access_token = token["access_token"]
+        assert access_token is not None
+    
+    def test_login_user_json(self,client):
+        response = client.post(
+        "/login",
+        data=json.dumps({
+            "username": f"{self.username}",
+            "password": f"{self.password}",
+        }),
+        content_type="application/json")
+
+        token = response.get_json()
+        access_token = token["access_token"]
+        refresh_token = token["refresh_token"]
+
+        assert response.status_code == 200
+        assert access_token is not None
+        assert refresh_token is not None
+
+    def test_profile_json(self,client):
+        tokens = self.tokens(client)
+        access_token = tokens["access_token"]
+
+        response = client.get(
+            "/profile",
+            headers={"Authorization": f"Bearer {access_token}"}
+        )
+
+        assert response.status_code == 200
+
+        data = response.get_json()
+        assert "User Profile" in data
+        assert "Translation_history" in data
+        assert "File_translation_history" in data
+
+        print(data)
+    
+    def tokens(self,client):  
+        response = client.post("/login", json={
+            "username": f"{self.username}",
+            "password": f"{self.password}"
+        })
+        assert response.status_code == 200
+        data = response.get_json()
+        return data 

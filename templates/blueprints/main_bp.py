@@ -34,7 +34,7 @@ def signup():
         if errors:
             return jsonify(errors)
 
-@main_bp.route('/login', methods=['GET', 'POST'])
+@main_bp.route('/login', methods=['POST'])
 def login():
     if request.method == 'POST':
         form = request.get_json()

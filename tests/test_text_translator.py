@@ -23,9 +23,7 @@ def create_txt_file():
     with open(os.path.join(test_dir, test_file_3), "w") as f:
         f.write("This is a test file\n\nBlank line above this")
 
-def remove_test_files():
-    for f in glob.glob(os.path.join(test_dir, "*.txt")):
-        os.remove(f)
+
 
 class TestUserInput(unittest.TestCase):
     @classmethod
@@ -59,6 +57,3 @@ class TestUserInput(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(exit=False)
-    print("Deleting test files in 20 seconds")
-    time.sleep(20)
-    remove_test_files()
