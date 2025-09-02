@@ -4,7 +4,7 @@ def create_lang_codes():
     lang_dict = {}
 
     for code, name in LANGUAGES.items():
-        lang_dict[code] = name
+        lang_dict[name] = code
 
     return lang_dict
 
@@ -20,7 +20,7 @@ def validate_codes():
             return None
 
         # Looking for valid language and returning the language code
-        for code, language_name in language_code_map.items():
+        for language_name, code in language_code_map.items():
             if input_language.lower() in language_name.lower():
                 return code
         

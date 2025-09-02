@@ -15,7 +15,6 @@ def app():
 def client(app):
     return app.test_client()
 
-
 @pytest.fixture()
 def runner(app):
     return app.test_cli_runner()
@@ -36,3 +35,10 @@ def cleanup_files():
     time.sleep(3)
     logging.info("Deleting test files")
     remove_test_files()
+
+@pytest.fixture(scope="session",autouse=True)
+def delete_test_users():
+    from src.db.db_functions import delete_data
+    delete_query = "DELETE FROM users WHERE username LIKE 'test%';"
+    delete_data(delete_query)
+    print("Deleting test users")

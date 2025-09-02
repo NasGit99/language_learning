@@ -33,11 +33,6 @@ def generate_username():
 
     return username
 
-def delete_test_users():
-    delete_query = "DELETE FROM users WHERE username LIKE 'test_%';"
-    delete_data(delete_query)
-    print("Deleting test users")
-
 
 class TestUserCreation(unittest.TestCase):
     # For the test to work I just need to make sure I have a static user already in the DB

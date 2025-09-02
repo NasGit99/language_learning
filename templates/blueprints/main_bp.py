@@ -61,12 +61,15 @@ def process_text():
         form = request.get_json()
         user_text = form['user_text']
         target_language_code = form['target_language']
-        target_language_name = lang_codes[target_language_code].capitalize()
+        try:
+            target_language_name = lang_codes[target_language_code.lower()]
+        except KeyError:
+            return jsonify(400)
 
         if user_text and target_language_code:
-            transformed_text = asyncio.run(translate_text(user_text, target_language_code))
+            transformed_text = asyncio.run(translate_text(user_text, target_language_name))
             print(transformed_text)
-    
+
     username = get_jwt_identity()
     
     if username:
