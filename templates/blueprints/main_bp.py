@@ -64,7 +64,7 @@ def process_text():
         try:
             target_language_name = lang_codes[target_language_code.lower()]
         except KeyError:
-            return jsonify(400)
+            return jsonify({"error": "Invalid language code"}), 400
 
         if user_text and target_language_code:
             transformed_text = asyncio.run(translate_text(user_text, target_language_name))
