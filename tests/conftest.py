@@ -38,6 +38,7 @@ def cleanup_files():
 
 @pytest.fixture(scope="session",autouse=True)
 def delete_test_users():
+    yield
     from src.db.db_functions import delete_data
     delete_query = "DELETE FROM users WHERE username LIKE 'test%';"
     delete_data(delete_query)
