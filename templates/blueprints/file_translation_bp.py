@@ -38,8 +38,8 @@ def upload_file():
             file.save(file_path)
             return file_path, None
         
-@jwt_required()
 @file_translation_bp.route('/translate_document', methods=['POST'] )
+@jwt_required()
 def translate_text_files():
     lang_codes = create_lang_codes()
     username = get_jwt_identity()
@@ -47,13 +47,13 @@ def translate_text_files():
     if request.method == 'POST':
         file_path, error = upload_file()
         if not file_path:
-            return jsonify(error)
+            return jsonify({"error": error}), 400
         file = os.path.basename(file_path)
-        target_language_code = request.form['target_language']
+        target_language_name = request.form['target_language']
         
-        for code, name in lang_codes.items():
-            if target_language_code == code:
-                target_language_name = name.capitalize()
+        for name, code in lang_codes.items():
+            if target_language_name.lower() == name:
+                target_language_code = code
 
         file_extension = os.path.splitext(file)[1].lower().lstrip('.')
 
@@ -79,19 +79,33 @@ def translate_text_files():
             "download_name" : translated_file
             })
 
-@jwt_required()
+
 @file_translation_bp.route('/download_file', methods = ['GET'])
+@jwt_required()
 def download_file():
 
+
     filename = request.args.get('file')
+    print("DEBUG: filename received:", filename)
     
     if not filename or not allowed_file(filename):
-        return f"Incorrect filename, {filename} was not found on the server", 400
+        return jsonify({
+            "error": f"File was not submitted or has an invalid extension. "
+                     f"Extensions allowed are {current_app.config['ALLOWED_EXTENSIONS']}."
+        }), 400
+    
+    folder = current_app.config.get('TESTING_FOLDER') if current_app.config.get('TESTING') else current_app.config['UPLOAD_FOLDER']
+    file_path = os.path.join(folder, filename)
+
+    if not os.path.exists(file_path):
+        return jsonify({
+            "error": f"Incorrect filename. {filename} was not found on the server."
+        }), 400
     
     verified_filename = secure_filename(filename)
 
     return send_from_directory(
-        directory =current_app.config['UPLOAD_FOLDER'] ,
+        directory =os.path.abspath(folder) ,
         path=verified_filename,
         as_attachment=True,
         download_name=verified_filename

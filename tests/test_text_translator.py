@@ -1,8 +1,9 @@
 import unittest
 import os
-import glob
-import time
 import sys
+from tests.conftest import client
+import json
+import io
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
@@ -55,5 +56,81 @@ class TestUserInput(unittest.TestCase):
         output = self.file_3.save_txt_file()
         self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
 
-if __name__ == "__main__":
-    unittest.main(exit=False)
+class TestJsonFields:
+    import random
+    username = f"test{random.randint(1,10000)}"
+    password = f"test{random.randint(1,10000)}"
+
+    def test_json_txt_file(self, client):
+        # I will refactor this to make the default user easier to make
+        # Also the test cases can be seperated
+        token = client.post(
+        "/signup",
+        data=json.dumps({
+            "username": f"{self.username}",
+            "first_name": "cakes",
+            "last_name": "cake",
+            "email": "darktest@gmail.com",
+            "password": f"{self.password}",
+        }),
+        content_type="application/json")
+        token_data = token.get_json()
+
+        access_token = token_data["access_token"]
+
+        file_data = {
+            "file": (io.BytesIO(b"dummy content"), "testfile.txt"),
+            "target_language": "French"
+        }
+
+        response_send_file = client.post(
+            "/translate_document",
+            data=file_data,
+            content_type="multipart/form-data",
+            headers={"Authorization": f"Bearer {access_token}"}
+        )
+
+        assert response_send_file.status_code == 200
+
+        bad_file_data = file_data = {
+            "file": (io.BytesIO(b"dummy content"), "testfile.fakeext"),
+            "target_language": "French"
+        }
+
+        response_send_bad_file = client.post(
+            "/translate_document",
+            data=bad_file_data,
+            content_type="multipart/form-data",
+            headers={"Authorization": f"Bearer {access_token}"}
+        )
+
+        assert response_send_bad_file.status_code == 400
+
+
+        response_download_file = client.get(
+            "/download_file?file=test_file.txt",
+            headers={"Authorization": f"Bearer {access_token}"}   
+        )
+
+        assert response_download_file.status_code == 200
+
+        response_bad_download = client.get(
+            "/download_file?file=file_doesnt_exist.txt",
+            headers={"Authorization": f"Bearer {access_token}"}   
+        )
+        
+        assert response_bad_download.status_code == 400
+
+        response_bad_upload = client.post(
+        "/translate_document",
+        data=json.dumps({
+            "file": "file_doesnt_exist.txt",
+            "target_language": "French",
+        }),
+        content_type="application/json",
+        headers={"Authorization": f"Bearer {access_token}"})
+
+        assert response_bad_upload.status_code == 400
+
+
+

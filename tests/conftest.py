@@ -1,6 +1,7 @@
 import pytest
 from language_learning import create_app
 import logging
+import os
 
 
 @pytest.fixture()
@@ -8,6 +9,7 @@ def app():
     app = create_app()
     app.config.update({
         "TESTING": True,
+        "TESTING_FOLDER" : os.path.join(os.getcwd(), 'tests')
     })
     yield app
 

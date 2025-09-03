@@ -23,8 +23,8 @@ class TestTranslateText(unittest.IsolatedAsyncioTestCase):
 
 class TestJsonFields:
     import random
-    username = f"test{random.randint(1,10000)}"
-    password = f"test{random.randint(1,10000)}"
+    username = f"test_{random.randint(1,10000)}"
+    password = f"test_{random.randint(1,10000)}"
 
     def test_translate_json(self,client):
         token = client.post(
