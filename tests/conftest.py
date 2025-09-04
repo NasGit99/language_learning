@@ -4,7 +4,7 @@ import logging
 import os
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def app():
     app = create_app()
     app.config.update({
@@ -13,7 +13,7 @@ def app():
     })
     yield app
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def client(app):
     return app.test_client()
 
@@ -45,3 +45,12 @@ def delete_test_users():
     delete_query = "DELETE FROM users WHERE username LIKE 'test%';"
     delete_data(delete_query)
     print("Deleting test users")
+
+@pytest.fixture(scope="session")
+def json_users(request):
+    client = request.getfixturevalue("client")
+
+    from tests.helpers import JsonUser
+    user1 = JsonUser(client)
+    user2 = JsonUser(client, username=user1.username, password=user1.password, refresh=True)
+    return user1, user2
