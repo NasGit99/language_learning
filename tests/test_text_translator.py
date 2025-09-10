@@ -57,6 +57,7 @@ class TestUserInput(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
 
 class TestJsonFields:
+    #ToDO: we can import the user1 json user in order to make the necessary request needed and split up the test cases
     import random
     username = f"test{random.randint(1,10000)}"
     password = f"test{random.randint(1,10000)}"

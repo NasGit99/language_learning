@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 from db_functions import * 
 from user.user_login import UserProfile
 
-def generate_username():
+def generate_string():
     adjectives = ['fast', 'cool', 'happy', 'lazy', 'brave', 'fuzzy', 'sneaky', 'loud']
     nouns = ['tiger', 'panda', 'ninja', 'robot', 'wizard', 'penguin', 'dragon', 'sloth']
     suffixes = ['x', '123', '_dev', '99', 'bot', '_01', '_zz']
@@ -24,9 +24,17 @@ def generate_username():
     suffix = random.choice(suffixes)
     number = ''.join(random.choices(string.digits, k=2))
 
-    username = f"{prefix}{adj}_{noun}{suffix}{number}"
+    new_string = f"{prefix}{adj}_{noun}{suffix}{number}"
 
+    return new_string
+
+def generate_username():
+    username = generate_string()
     return username[:16]
+
+def generate_password():
+    password = generate_string()
+    return password
 
 def create_token(client, username, password, refresh=False):
     response = client.post("/login", json={
@@ -38,14 +46,15 @@ def create_token(client, username, password, refresh=False):
     return data if refresh else data["access_token"]
 
 
-class TestUserCreation:
-    # For the test to work I just need to make sure I have a static user already in the DB
-    static_user= UserProfile("logintestuser123","testuser@gmail.com","Test","User","test_user_123")
-    elastic_user = UserProfile(generate_username(),"testuser@gmail.com","Test","User","test_user_123")
-    bad_fn = UserProfile(generate_username(),"testuser@gmail.com","123","User","test_user_123")
-    bad_ln = UserProfile(generate_username(),"testuser@gmail.com","Test","123","test_user_123")
-    bad_email = UserProfile(generate_username(),"testusermail.com","Test","123","test_user_123")
-    bad_fields = UserProfile("logintestuser123","testusermail.com","345","123","pass")
+class TestUserCreation():
+    #ToDO: Add the static user to conftest along with a way to generate passwords
+   
+    #static_user= UserProfile(user1.username,"testuser@gmail.com","Test","User",user1.password)
+    elastic_user = UserProfile(generate_username(),"testuser@gmail.com","Test","User",generate_password())
+    bad_fn = UserProfile(generate_username(),"testuser@gmail.com","123","User",generate_password())
+    bad_ln = UserProfile(generate_username(),"testuser@gmail.com","Test","123",generate_password())
+    bad_email = UserProfile(generate_username(),"testusermail.com","Test","123",generate_password())
+    bad_fields = UserProfile(generate_username() + generate_username(),"testusermail.com","345","123",generate_password()[:5])
     test_user_1= UserProfile(elastic_user.username, elastic_user.email, elastic_user.first_name, 
                                       elastic_user.last_name, elastic_user.password)
     def test_user_creation(self):
@@ -53,9 +62,11 @@ class TestUserCreation:
        username, _ = self.test_user_1.create_signup()
        assert username
 
-    def test_user_exist(self):
+    def test_user_exist(self,json_users):
         print("Checking if user exists \n\n\n")
-        _, errors = self.static_user.create_signup()
+        static_user, _ = json_users
+        test_case= UserProfile(static_user.username,"testuser@gmail.com","Test","User",static_user.password)
+        _, errors = test_case.create_signup()
         assert "username" in errors
     
     def test_bad_first_name(self):      
@@ -82,26 +93,23 @@ class TestUserCreation:
         assert "email" in errors
         assert "password"in errors
     
-    def test_login(self):
+    def test_login(self,json_users):
         print("Logging in")
-        login_attempt = UserProfile.create_login("logintestuser123","test_user_123")
+        static_user, _ = json_users
+        login_attempt = UserProfile.create_login(static_user.username,static_user.password)
         assert login_attempt
 
-    def test_bad_login_password(self):
+    def test_bad_login_password(self,json_users):
+        static_user, _ = json_users
         print("Testing bad password")
-        login_attempt = UserProfile.create_login("logintestuser123","test123")
+        login_attempt = UserProfile.create_login(static_user.username,"test123")
         assert login_attempt is None
 
-    def test_bad_login_username(self):
+    def test_bad_login_username(self,json_users):
         print("Testing bad username")
-        login_attempt = UserProfile.create_login("testuser10234","test123")
+        static_user, _ = json_users
+        login_attempt = UserProfile.create_login("testuser10234",static_user.password)
         assert login_attempt is None
-
-class JsonUser:
-    def __init__(self,client, username = None, password = None, refresh = None):
-        self.username = username or generate_username() 
-        self.password = password or f"test{random.randint(1,10000)}" or password 
-        self.token = create_token(client, self.username, self.password, refresh)
 
 class TestJsonFields():
         
