@@ -51,6 +51,6 @@ def json_users(request):
     client = request.getfixturevalue("client")
 
     from tests.helpers import JsonUser
-    user1 = JsonUser(client)
-    user2 = JsonUser(client, username=user1.username, password=user1.password, refresh=True)
-    return user1, user2
+    user_1 = JsonUser(client)
+    user_2 = JsonUser(client, username=user_1.username, password=user_1.password, refresh=True)
+    return user_1, user_2

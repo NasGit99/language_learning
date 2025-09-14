@@ -1,7 +1,7 @@
 import unittest
 import os
 import sys
-from tests.conftest import client
+from tests.conftest import client, json_users
 import json
 import io
 
@@ -57,28 +57,9 @@ class TestUserInput(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
 
 class TestJsonFields:
-    #ToDO: we can import the user1 json user in order to make the necessary request needed and split up the test cases
-    import random
-    username = f"test{random.randint(1,10000)}"
-    password = f"test{random.randint(1,10000)}"
 
-    def test_json_txt_file(self, client):
-        # I will refactor this to make the default user easier to make
-        # Also the test cases can be seperated
-        token = client.post(
-        "/signup",
-        data=json.dumps({
-            "username": f"{self.username}",
-            "first_name": "cakes",
-            "last_name": "cake",
-            "email": "darktest@gmail.com",
-            "password": f"{self.password}",
-        }),
-        content_type="application/json")
-        token_data = token.get_json()
-
-        access_token = token_data["access_token"]
-
+    def test_json_txt_file(self, client,json_users):
+        user_1, _ = json_users
         file_data = {
             "file": (io.BytesIO(b"dummy content"), "testfile.txt"),
             "target_language": "French"
@@ -88,12 +69,16 @@ class TestJsonFields:
             "/translate_document",
             data=file_data,
             content_type="multipart/form-data",
-            headers={"Authorization": f"Bearer {access_token}"}
+            headers={"Authorization": f"Bearer {user_1.token}"}
         )
 
         assert response_send_file.status_code == 200
+    
+    def test_json_bad_txt_file(self, client, json_users):
+        
+        user_1, _ = json_users
 
-        bad_file_data = file_data = {
+        bad_file_data = {
             "file": (io.BytesIO(b"dummy content"), "testfile.fakeext"),
             "target_language": "French"
         }
@@ -102,25 +87,31 @@ class TestJsonFields:
             "/translate_document",
             data=bad_file_data,
             content_type="multipart/form-data",
-            headers={"Authorization": f"Bearer {access_token}"}
+            headers={"Authorization": f"Bearer {user_1.token}"}
         )
 
         assert response_send_bad_file.status_code == 400
 
-
+    def test_json_download_txt_file(self, client, json_users):
+        user_1, _ = json_users
         response_download_file = client.get(
-            "/download_file?file=test_file.txt",
-            headers={"Authorization": f"Bearer {access_token}"}   
+            "/download_file?file=testfile.txt",
+            headers={"Authorization": f"Bearer {user_1.token}"}   
         )
 
         assert response_download_file.status_code == 200
 
+    def test_json_download_bad_txt_file(self, client, json_users):
+        user_1, _ = json_users
         response_bad_download = client.get(
             "/download_file?file=file_doesnt_exist.txt",
-            headers={"Authorization": f"Bearer {access_token}"}   
+            headers={"Authorization": f"Bearer {user_1.token}"}   
         )
-        
+    
         assert response_bad_download.status_code == 400
+
+    def test_json_bad_upload_txt_file(self, client, json_users):
+        user_1, _ = json_users
 
         response_bad_upload = client.post(
         "/translate_document",
@@ -129,7 +120,7 @@ class TestJsonFields:
             "target_language": "French",
         }),
         content_type="application/json",
-        headers={"Authorization": f"Bearer {access_token}"})
+        headers={"Authorization": f"Bearer {user_1.token}"})
 
         assert response_bad_upload.status_code == 400
 

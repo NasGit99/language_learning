@@ -1,7 +1,5 @@
 import sys
 import os
-import random
-import string
 import json
 
 from tests.conftest import client, json_users
@@ -12,44 +10,9 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/db')))
 from db_functions import * 
 from user.user_login import UserProfile
-
-def generate_string():
-    adjectives = ['fast', 'cool', 'happy', 'lazy', 'brave', 'fuzzy', 'sneaky', 'loud']
-    nouns = ['tiger', 'panda', 'ninja', 'robot', 'wizard', 'penguin', 'dragon', 'sloth']
-    suffixes = ['x', '123', '_dev', '99', 'bot', '_01', '_zz']
-
-    prefix = "test_"
-    adj = random.choice(adjectives)
-    noun = random.choice(nouns)
-    suffix = random.choice(suffixes)
-    number = ''.join(random.choices(string.digits, k=2))
-
-    new_string = f"{prefix}{adj}_{noun}{suffix}{number}"
-
-    return new_string
-
-def generate_username():
-    username = generate_string()
-    return username[:16]
-
-def generate_password():
-    password = generate_string()
-    return password
-
-def create_token(client, username, password, refresh=False):
-    response = client.post("/login", json={
-        "username": username,
-        "password": password
-    })
-    assert response.status_code == 200
-    data = response.get_json()
-    return data if refresh else data["access_token"]
-
+from tests.helpers import generate_username, generate_password, create_token
 
 class TestUserCreation():
-    #ToDO: Add the static user to conftest along with a way to generate passwords
-   
-    #static_user= UserProfile(user1.username,"testuser@gmail.com","Test","User",user1.password)
     elastic_user = UserProfile(generate_username(),"testuser@gmail.com","Test","User",generate_password())
     bad_fn = UserProfile(generate_username(),"testuser@gmail.com","123","User",generate_password())
     bad_ln = UserProfile(generate_username(),"testuser@gmail.com","Test","123",generate_password())

@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import AsyncMock, patch
 import sys
 import os
-from tests.conftest import client
+from tests.conftest import client,json_users
 import json
 
 
@@ -22,25 +22,10 @@ class TestTranslateText(unittest.IsolatedAsyncioTestCase):
             await translate_text('Hi', 'BadFrench')
 
 class TestJsonFields:
-    import random
-    username = f"test_{random.randint(1,10000)}"
-    password = f"test_{random.randint(1,10000)}"
 
-    def test_translate_json(self,client):
-        token = client.post(
-        "/signup",
-        data=json.dumps({
-            "username": f"{self.username}",
-            "first_name": "cakes",
-            "last_name": "cake",
-            "email": "darktest@gmail.com",
-            "password": f"{self.password}",
-        }),
-        content_type="application/json")
-        token_data = token.get_json()
-
-        access_token = token_data["access_token"]
-
+    def test_translate_json(self,client,json_users):
+        user_1, _ = json_users
+    
         response = client.post(
         "/translate_text",
         data=json.dumps({
@@ -48,9 +33,14 @@ class TestJsonFields:
             "target_language": "French",
         }),
         content_type="application/json",
-        headers={"Authorization": f"Bearer {access_token}"})
+        headers={"Authorization": f"Bearer {user_1.token}"})
 
         assert response.status_code == 200
+
+        print(response.get_json())
+    
+    def test_bad_translate_json(self, client, json_users):
+        user_1, _ = json_users
 
         response_2= client.post(
         "/translate_text",
@@ -59,10 +49,10 @@ class TestJsonFields:
             "target_language": "fakelang",
         }),
         content_type="application/json",
-        headers={"Authorization": f"Bearer {access_token}"})
+        headers={"Authorization": f"Bearer {user_1.token}"})
 
         assert response_2.status_code == 400
 
-        print (response.get_json(), response_2.get_json())
+        print(response_2.get_json())
 
 
