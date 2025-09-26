@@ -88,23 +88,29 @@ def download_file():
     logging.info(f"Filename received: {filename}")
     
     if not filename or not allowed_file(filename):
+        msg =f""" 
+            File was not submitted or has an invalid extension.
+            Extensions allowed are {current_app.config['ALLOWED_EXTENSIONS']}."
+             """
+        logging.info(msg)
         return jsonify({
-            "error": f"File was not submitted or has an invalid extension. "
-                     f"Extensions allowed are {current_app.config['ALLOWED_EXTENSIONS']}."
+            "error": msg
         }), 400
     
     folder = current_app.config['UPLOAD_FOLDER']
     file_path = os.path.join(folder, filename)
 
     if not os.path.exists(file_path):
+        msg = f"Incorrect filename. {filename} was not found on the server."
+        logging.info(msg)
         return jsonify({
-            "error": f"Incorrect filename. {filename} was not found on the server."
+            "error": msg
         }), 400
     
     verified_filename = secure_filename(filename)
 
     return send_from_directory(
-        directory =os.path.abspath(folder) ,
+        directory = os.path.abspath(folder) ,
         path=verified_filename,
         as_attachment=True,
         download_name=verified_filename
