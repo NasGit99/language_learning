@@ -41,7 +41,7 @@ class Database():
         logging.error("With values: %s", values)
         logging.exception("Exception occurred during cursor.execute()")
     else:
-        logging.info(f"Query executed successfully. Rows affected: {affected}")
+        logging.info(f"Query executed successfully: {sql}. Rows affected: {affected}")
     finally:
         if cursor:
             cursor.close()
@@ -67,7 +67,7 @@ class Database():
         return None
     else:
         affected = cursor.rowcount
-        logging.info(f"Select query executed successfully. Rows affected: {affected}")
+        logging.info(f"Select query executed successfully: {sql}. Rows affected: {affected}")
         return result
     finally:
         if cursor:
