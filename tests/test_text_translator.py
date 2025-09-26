@@ -109,6 +109,15 @@ class TestJsonFields:
         )
     
         assert response_bad_download.status_code == 400
+    
+    def test_json_download_bad_txt_ext(self, client, json_users):
+        user_1, _ = json_users
+        response_bad_download = client.get(
+            "/download_file?file=bad_txt_ext.bubble",
+            headers={"Authorization": f"Bearer {user_1.token}"}   
+        )
+    
+        assert response_bad_download.status_code == 400
 
     def test_json_bad_upload_txt_file(self, client, json_users):
         user_1, _ = json_users
