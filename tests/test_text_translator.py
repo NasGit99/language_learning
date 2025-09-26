@@ -18,9 +18,9 @@ os.makedirs(test_dir, exist_ok=True)
 
 def create_txt_file():
     with open(os.path.join(test_dir, test_file_1), "w") as f:
-        f.write("This is a test file")
+        f.write("This is a test file.")
     with open(os.path.join(test_dir, test_file_2), "w") as f:
-        f.write("This is a test file\nSecond line\nThird line")
+        f.write("This is a test file with a comma\nSecond line 1,2,3\nThird line")
     with open(os.path.join(test_dir, test_file_3), "w") as f:
         f.write("This is a test file\n\nBlank line above this")
 

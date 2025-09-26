@@ -28,14 +28,16 @@ def remove_test_files():
     test_dir = os.path.join(os.path.dirname(__file__), "") 
     os.makedirs(test_dir, exist_ok=True)
 
-    for f in glob.glob(os.path.join(test_dir, "*.txt")):
-        os.remove(f)
+    file_exts = ["*.txt","*.csv"]
+    for ext in file_exts:
+        for f in glob.glob(os.path.join(test_dir, ext)):
+            os.remove(f)
 
 @pytest.fixture(scope="session",autouse=True)
 def cleanup_files():
     import time
     yield
-    time.sleep(3)
+    time.sleep(5)
     logging.info("Deleting test files")
     remove_test_files()
 

@@ -39,7 +39,7 @@ def upload_file():
         
 @file_translation_bp.route('/translate_document', methods=['POST'] )
 @jwt_required()
-def translate_text_files():
+def translate_files():
     lang_codes = create_lang_codes()
     username = get_jwt_identity()
 
