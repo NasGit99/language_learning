@@ -8,7 +8,7 @@ import logging
 class CsvTranslator(TranslatorCore):
     
     def __init__(self, file_path, target_lang_code, upload_folder=None):
-        super().__init__(file_path, target_lang_code, upload_folder=os.path.join(os.path.dirname(__file__), "") )
+        super().__init__(file_path, target_lang_code, upload_folder)
 
     def csv_reader(self):
 
@@ -33,9 +33,14 @@ class CsvTranslator(TranslatorCore):
         columns, rows = self.csv_reader()
     
         rows_str = "\n".join(["||".join(row) for row in rows])
-
+        logging.info(f"Rows as a string: {rows_str}")
+        
+        #ToDO: When sending values like 1,2,3 or 123,456,789 the google api removes the commas
         translated_text = asyncio.run(translate_text(rows_str, self.target_lang_code))
+        
         logging.info("Translating csv file")
+        logging.info(f"Translated Text: {translated_text}")
+
 
         translated_rows =[]
 
@@ -45,18 +50,20 @@ class CsvTranslator(TranslatorCore):
             cells = row.split("||")
             cleaned_cell = [cell.strip() for cell in cells]
             translated_rows.append(cleaned_cell)
-        
+
+        logging.info(f"Columns are {columns}")
         logging.info(f"Translated rows are {translated_rows}")
 
         return columns, translated_rows
     
     def generate_csv(self):
 
-        columns, translated_rows = self.translate_csv()  
+        columns, translated_rows = self.translate_csv() 
 
         self.full_output_path = self.file_exists()
 
-        if columns or translated_rows is None:
+        if not columns or not translated_rows:
+            logging.info("No columns or translated rows")
             return None
         if columns and translated_rows:
             logging.info(f"Creating translated file {self.full_output_path}")
@@ -64,6 +71,7 @@ class CsvTranslator(TranslatorCore):
                     csvwriter = csv.writer(csvfile)       
                     csvwriter.writerow(columns)             
                     csvwriter.writerows(translated_rows)
+            logging.info(f"{self.full_output_path} created")
             return os.path.basename(self.full_output_path)
 
     def save_csv(self):
