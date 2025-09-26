@@ -18,8 +18,8 @@ def allowed_file(filename):
 
 def upload_file(): 
         if 'file' not in request.files:
-            logging.info("No file submitted")
-            return None, "No file submitted"
+            logging.info("No file submitted. Please submit the json form with the 'file' field")
+            return None, "No file submitted. Please submit the json form with the 'file' field"
          
         if request.method == "POST":
             file = request.files['file']
@@ -35,7 +35,6 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            file.save(file_path)
             return file_path, None
         
 @file_translation_bp.route('/translate_document', methods=['POST'] )
@@ -86,7 +85,7 @@ def download_file():
 
 
     filename = request.args.get('file')
-    print("DEBUG: filename received:", filename)
+    logging.info(f"Filename received: {filename}")
     
     if not filename or not allowed_file(filename):
         return jsonify({
@@ -94,7 +93,7 @@ def download_file():
                      f"Extensions allowed are {current_app.config['ALLOWED_EXTENSIONS']}."
         }), 400
     
-    folder = current_app.config.get('TESTING_FOLDER') if current_app.config.get('TESTING') else current_app.config['UPLOAD_FOLDER']
+    folder = current_app.config['UPLOAD_FOLDER']
     file_path = os.path.join(folder, filename)
 
     if not os.path.exists(file_path):

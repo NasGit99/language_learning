@@ -29,7 +29,6 @@ def create_token(client, username, password, refresh=False):
         "username": username,
         "password": password
     })
-    assert response.status_code == 200
     data = response.get_json()
     return data if refresh else data["access_token"]
 

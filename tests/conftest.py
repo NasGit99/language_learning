@@ -9,9 +9,10 @@ def app():
     app = create_app()
     app.config.update({
         "TESTING": True,
-        "TESTING_FOLDER" : os.path.join(os.getcwd(), 'tests')
+        "UPLOAD_FOLDER" :  os.path.dirname(__file__)
     })
     yield app
+
 
 @pytest.fixture(scope="session")
 def client(app):

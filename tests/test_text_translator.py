@@ -115,10 +115,10 @@ class TestJsonFields:
 
         response_bad_upload = client.post(
         "/translate_document",
-        data=json.dumps({
-            "file": "file_doesnt_exist.txt",
-            "target_language": "French",
-        }),
+        data = {
+            "file": (io.BytesIO(b"dummy content"), "file_doesnt_exist.txt"),
+            "target_language": "French"
+        },
         content_type="application/json",
         headers={"Authorization": f"Bearer {user_1.token}"})
 

@@ -59,6 +59,7 @@ class CsvTranslator(TranslatorCore):
         if columns or translated_rows is None:
             return None
         if columns and translated_rows:
+            logging.info(f"Creating translated file {self.full_output_path}")
             with open(self.full_output_path, 'x',encoding="utf-8",newline='') as csvfile:
                     csvwriter = csv.writer(csvfile)       
                     csvwriter.writerow(columns)             

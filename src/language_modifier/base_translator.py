@@ -6,7 +6,7 @@ import logging
 class TranslatorCore():
     def __init__(self, file_path, target_lang_code, upload_folder=None):
         self.file_path = file_path
-        self.upload_folder = upload_folder or current_app.config['UPLOAD_FOLDER']
+        self.upload_folder = upload_folder if upload_folder is not None else current_app.config['UPLOAD_FOLDER']
         self.upload_path = os.path.join(self.upload_folder, file_path)
         self.target_lang_code = target_lang_code
         self.output_file =f"{self.target_lang_code}_{self.file_path}"
@@ -17,7 +17,7 @@ class TranslatorCore():
     def file_validator(self):
 
         if not os.path.exists(self.upload_path):
-            msg = f"Error: {self.file_path} not found, please make sure the file path is correct."
+            msg = f"Error: {self.upload_path} not found, please make sure the file path is correct."
             logging.error(msg)
             raise FileNotFoundError(msg)
         try:
