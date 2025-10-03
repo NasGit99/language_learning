@@ -58,15 +58,21 @@ def translate_files():
 
         if file_extension.lower() == 'txt':
             translator = TextFileTranslator(file, target_language_code)
-            translated_file = translator.save_txt_file()
-            pass
+            try:
+                translated_file = translator.save_txt_file()
+                pass
+            except ValueError as e:
+                return jsonify(f"error: {e}"), 400
 
         if file_extension.lower() == 'csv':
             translator = CsvTranslator(file, target_language_code)
-            translated_file = translator.save_csv()
-            pass
+            try:
+                translated_file = translator.save_csv()
+                pass
+            except ValueError as e:
+                return jsonify(f"error: {e}"), 400
        
-        if username:
+        if username and translated_file:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             values = (username,file, translated_file,target_language_name, timestamp)
             query = saved_files_query()

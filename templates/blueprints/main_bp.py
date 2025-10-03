@@ -67,8 +67,11 @@ def process_text():
             return jsonify({"error": "Invalid language code"}), 400
 
         if user_text and target_language_code:
-            transformed_text = asyncio.run(translate_text(user_text, target_language_name))
-            print(transformed_text)
+            try:
+                transformed_text = asyncio.run(translate_text(user_text, target_language_name))
+                return jsonify(transformed_text)
+            except ValueError as e:
+                return jsonify(f"error: {e}"), 400
 
     username = get_jwt_identity()
     
