@@ -1,6 +1,6 @@
 import csv
 from language_modifier.base_translator import TranslatorCore
-from language_modifier.language_translator import translate_text
+from language_modifier.language_translator import translate_bulk
 import asyncio
 import os
 import logging
@@ -30,26 +30,10 @@ class CsvTranslator(TranslatorCore):
     def translate_csv(self):
         self.file_validator()
 
-        columns, rows = self.csv_reader()
-    
-        rows_str = "\n".join(["||".join(row) for row in rows])
-        logging.info(f"Rows as a string: {rows_str}")
-        
-        #ToDO: When sending values like 1,2,3 or 123,456,789 the google api removes the commas
-        translated_text = asyncio.run(translate_text(rows_str, self.target_lang_code))
-        
-        logging.info("Translating csv file")
-        logging.info(f"Translated Text: {translated_text}")
+        columns, rows = self.csv_reader()   
 
-
-        translated_rows =[]
-
-        # Removing whitespaces since translated text function generates them
-
-        for row in translated_text.split("\n"):
-            cells = row.split("||")
-            cleaned_cell = [cell.strip() for cell in cells]
-            translated_rows.append(cleaned_cell)
+        logging.info("Translating csv file")   
+        translated_rows = asyncio.run(translate_bulk(rows, self.target_lang_code))
 
         logging.info(f"Columns are {columns}")
         logging.info(f"Translated rows are {translated_rows}")
