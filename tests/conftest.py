@@ -49,7 +49,7 @@ def delete_test_users():
     delete_data(delete_query)
     print("Deleting test users")
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session",autouse=True)
 def json_users(request):
     client = request.getfixturevalue("client")
 
