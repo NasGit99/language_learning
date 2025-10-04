@@ -2,7 +2,7 @@ import unittest
 import os
 import sys
 from tests.conftest import client, json_users
-import json
+import pytest
 import io
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
@@ -16,6 +16,7 @@ test_file_3 = "testfile3.txt"
 test_dir = os.path.join(os.path.dirname(__file__), "") 
 os.makedirs(test_dir, exist_ok=True)
 
+@pytest.fixture(scope="session",autouse=True)
 def create_txt_file():
     with open(os.path.join(test_dir, test_file_1), "w") as f:
         f.write("This is a test file.")
@@ -24,16 +25,16 @@ def create_txt_file():
     with open(os.path.join(test_dir, test_file_3), "w") as f:
         f.write("This is a test file\n\nBlank line above this")
 
-
-
 class TestUserInput(unittest.TestCase):
+    # These test cases test the unique file name functionality
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls,json_users):
         create_txt_file()
-        cls.file_1 = TextFileTranslator(test_file_1, "Spanish", test_dir)
-        cls.fake_file = TextFileTranslator("FakeFile.txt", "Spanish", test_dir)
-        cls.file_2 = TextFileTranslator(test_file_2, "Hindi", test_dir)
-        cls.file_3 = TextFileTranslator(test_file_3, "Hindi", test_dir)
+        user_1, _ = json_users
+        cls.file_1 = TextFileTranslator(test_file_1, "Spanish", test_dir,user_1.username)
+        cls.fake_file = TextFileTranslator("FakeFile.txt", "Spanish", test_dir,user_1.username)
+        cls.file_2 = TextFileTranslator(test_file_2, "Hindi", test_dir,user_1.username)
+        cls.file_3 = TextFileTranslator(test_file_3, "Hindi", test_dir,user_1.username)
 
     def test_file_translation(self):
         output = self.file_1.save_txt_file()

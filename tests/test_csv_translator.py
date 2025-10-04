@@ -2,6 +2,7 @@ from tests.conftest import client, json_users
 import os 
 import csv
 import io
+import pytest
 
 
 test_dir = os.path.join(os.path.dirname(__file__)) 
@@ -31,6 +32,7 @@ test_file_3_data = [
     ['', 'Math', 123]
 ]
 
+@pytest.fixture(scope="session",autouse=True)
 def create_csv_file():
     with open(os.path.join(test_dir, test_file_1), "w", newline="") as f:
         writer = csv.writer(f)
@@ -43,8 +45,6 @@ def create_csv_file():
         writer.writerows(test_file_3_data)
 
 class Test_CSV_Translator():
-
-    create_csv_file()
 
     # test_text_translator test most of the upload and download functionality so not much is needed here besides
     # the file translation for the samples we have
