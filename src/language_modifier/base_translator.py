@@ -6,8 +6,9 @@ from datetime import datetime
 
 
 class TranslatorCore():
-    def __init__(self, file_path, target_lang_code, upload_folder=None):
+    def __init__(self, file_path, target_lang_code, upload_folder=None, testing=None):
         self.timestamp = datetime.now().strftime("%Y%m%d%H%M")
+        self.testing = testing
         self.uid = self.get_uid()
         self.file_path = file_path
         self.upload_folder = upload_folder if upload_folder is not None else current_app.config['UPLOAD_FOLDER']
@@ -18,11 +19,14 @@ class TranslatorCore():
         self.full_output_path = os.path.join(self.upload_folder,self.output_file)
     
     def get_uid(self):
-        from db_functions import retrieve_data
-        username = get_jwt_identity()
-        query = "select id from users where username =%s"
-        uid = retrieve_data(query,username)
-        return uid[0]
+        if not self.testing:
+            from db_functions import retrieve_data
+            username = get_jwt_identity()
+            query = "select id from users where username =%s"
+            uid = retrieve_data(query,username)
+            return str(uid[0])
+        else:
+            return "10"
 
 
     def file_validator(self):

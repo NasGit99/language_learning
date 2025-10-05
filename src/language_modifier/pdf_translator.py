@@ -5,15 +5,16 @@ import logging
 import pymupdf
 
 class PdfTranslator(TranslatorCore):
-    
-    def __init__(self, file_path, target_lang_code, upload_folder=None,username=None):
-        super().__init__(file_path, target_lang_code, upload_folder)
+    def __init__(self, file_path, target_lang_code, upload_folder=None, username=None, testing=None):
+        super().__init__(file_path, target_lang_code, upload_folder,testing)
         self.username = username
 
     # def font_validator()
 
+    # def pdf_reader()
+
     def pdf_txt_extractor(self):
-        doc = pymupdf.open(self.file_path)
+        doc = pymupdf.open(self.upload_path)
         for page in doc:
             txt_page = page.get_textpage().extractDICT()["blocks"]
 
@@ -41,7 +42,6 @@ class PdfTranslator(TranslatorCore):
                         logging.info (f"These are the hits:{hits}")
 
                         for rect in hits:
-                            logging.info(f"These are the rects {rect}")
                             page.add_redact_annot(rect)
 
                         # Removes content 
@@ -55,9 +55,6 @@ class PdfTranslator(TranslatorCore):
                             color=color,
                         )
 
-            doc.save(self.output_file,deflate=True)
-
-                
-            #def translate_pdf(self):
-
+        doc.save(self.full_output_path)
+        doc.close()
 

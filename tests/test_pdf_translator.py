@@ -10,14 +10,16 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../'
 
 from src.language_modifier.pdf_translator import PdfTranslator
 
-test_file_1 = "basic_one_page.pdf"
-
 test_dir = os.path.join(os.path.dirname(__file__), "") 
 os.makedirs(test_dir, exist_ok=True)
 
+test_file_1_name ="test_file_1.pdf"
+test_file_1_path = os.path.join(test_dir, test_file_1_name)
+
+
 @pytest.fixture(scope="session",autouse=True)
 def create_pdf_file():
-    c = canvas.Canvas(test_file_1, pagesize=letter)
+    c = canvas.Canvas(test_file_1_path, pagesize=letter)
     width, height = letter
 
     # --- Header ---
@@ -33,12 +35,11 @@ def create_pdf_file():
     # --- Footer ---
     c.setFont("Helvetica-Oblique", 10)
     c.drawCentredString(width / 2, 30, "This is the Footer - Page 1")
-    
     c.save()
 
 class TestInput():
     def test_pdf_translation(self,json_users):
         user_1, _ = json_users
-        file_1 = PdfTranslator(test_file_1, "Spanish", test_dir,username=user_1.username)
+        file_1 = PdfTranslator(test_file_1_name, "Spanish", test_dir, username=user_1.username,testing=True )
         output = file_1.pdf_txt_extractor()
         print(output)
