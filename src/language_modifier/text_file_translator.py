@@ -6,8 +6,8 @@ from language_modifier.base_translator import *
 
 class TextFileTranslator(TranslatorCore):
 
-    def __init__(self, file_path, target_lang_code, username =None, upload_folder=None):
-        super().__init__(file_path, target_lang_code, upload_folder)
+    def __init__(self, file_path, target_lang_code, username =None, upload_folder=None, testing=None):
+        super().__init__(file_path, target_lang_code, upload_folder,testing)
 
     def read_txt_file(self):
         with open(self.upload_path,"r", encoding="utf8") as file:
