@@ -25,37 +25,32 @@ def create_txt_file():
     with open(os.path.join(test_dir, test_file_3), "w") as f:
         f.write("This is a test file\n\nBlank line above this")
 
-class TestUserInput(unittest.TestCase):
+class TestUserInput():
     # These test cases test the unique file name functionality
-    @classmethod
-    def setUpClass(cls,json_users):
-        create_txt_file()
-        user_1, _ = json_users
-        cls.file_1 = TextFileTranslator(test_file_1, "Spanish", test_dir,user_1.username)
-        cls.fake_file = TextFileTranslator("FakeFile.txt", "Spanish", test_dir,user_1.username)
-        cls.file_2 = TextFileTranslator(test_file_2, "Hindi", test_dir,user_1.username)
-        cls.file_3 = TextFileTranslator(test_file_3, "Hindi", test_dir,user_1.username)
-
     def test_file_translation(self):
-        output = self.file_1.save_txt_file()
-        self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
+        file_1 = TextFileTranslator(test_file_1, "Spanish", test_dir,testing=True)
+        output = file_1.save_txt_file()
+        assert os.path.exists(os.path.join(test_dir, output))
 
     def test_file_exists(self):
-        self.file_1.save_txt_file()
-
-        self.assertNotEqual(self.file_1.new_output_file, self.file_1.output_file)
+        file_1 = TextFileTranslator(test_file_1, "Spanish", test_dir,testing=True)
+        file_1.save_txt_file()
+        assert file_1.new_output_file != file_1.output_file
 
     def test_file_not_valid(self):
-        with self.assertRaises(FileNotFoundError):
-            self.fake_file.save_txt_file()
+        fake_file = TextFileTranslator("FakeFile.txt", "Spanish", test_dir,testing=True)
+        with pytest.raises(FileNotFoundError):
+            fake_file.save_txt_file()
 
     def test_multi_line_file(self):
-        output = self.file_2.save_txt_file()
-        self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
+        file_2 = TextFileTranslator(test_file_2, "Hindi", test_dir,testing=True)
+        output = file_2.save_txt_file()
+        assert os.path.exists(os.path.join(test_dir, output))
 
     def test_blank_line(self):
-        output = self.file_3.save_txt_file()
-        self.assertTrue(os.path.exists(os.path.join(test_dir, output)))
+        file_3 = TextFileTranslator(test_file_3, "Hindi", test_dir, testing=True)
+        output = file_3.save_txt_file()
+        assert os.path.exists(os.path.join(test_dir, output))
 
 class TestJsonFields:
 
