@@ -10,6 +10,7 @@ class TextFileTranslator(TranslatorCore):
         super().__init__(file_path, target_lang_code, upload_folder,testing)
 
     def read_txt_file(self):
+        self.file_validator()
         with open(self.upload_path,"r", encoding="utf8") as file:
             # Handles multi line files and saves it as a list
             lines = file.readlines()
@@ -17,7 +18,6 @@ class TextFileTranslator(TranslatorCore):
 
     def translate_file(self):
 
-        self.file_validator()
         lines = self.read_txt_file()
 
         if lines is None:

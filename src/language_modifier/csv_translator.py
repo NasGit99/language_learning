@@ -11,6 +11,7 @@ class CsvTranslator(TranslatorCore):
         super().__init__(file_path, target_lang_code, upload_folder,testing)
 
     def csv_reader(self):
+        self.file_validator()
 
         columns = []
         rows = []
@@ -28,7 +29,6 @@ class CsvTranslator(TranslatorCore):
         return columns, rows
     
     def translate_csv(self):
-        self.file_validator()
 
         columns, rows = self.csv_reader()   
 

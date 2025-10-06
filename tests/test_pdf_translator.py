@@ -38,5 +38,11 @@ def create_pdf_file():
 class TestInput():
     def test_pdf_translation(self):
         file_1 = PdfTranslator(test_file_1_name, "Spanish", test_dir,testing=True )
-        output = file_1.pdf_txt_extractor()
-        print(output)
+        output = file_1.translate_pdf()
+        assert os.path.exists(os.path.join(test_dir, output))
+        
+    # def test_small_pdf_translation(self):
+    #     file_1 = PdfTranslator("sample-local-pdf.pdf", "Spanish", test_dir,testing=True )
+    #     output = file_1.translate_pdf()
+    #     assert os.path.exists(os.path.join(test_dir, output))
+
