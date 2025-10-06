@@ -1,7 +1,5 @@
-import unittest
 import os
 import sys
-from tests.conftest import client, json_users
 import pytest
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -38,8 +36,7 @@ def create_pdf_file():
     c.save()
 
 class TestInput():
-    def test_pdf_translation(self,json_users):
-        user_1, _ = json_users
-        file_1 = PdfTranslator(test_file_1_name, "Spanish", test_dir, username=user_1.username,testing=True )
+    def test_pdf_translation(self):
+        file_1 = PdfTranslator(test_file_1_name, "Spanish", test_dir,testing=True )
         output = file_1.pdf_txt_extractor()
         print(output)
