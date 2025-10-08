@@ -17,12 +17,9 @@ class PdfTranslator(TranslatorCore):
 
     def pdf_text_extractor(self):
         pdf = self.pdf_reader()
-        pdf_content = {"text":[],
-                       "font": [],
-                       "size": [],
-                       "color": [],
-                       "origin":[],
-                       "bbox":[]}
+
+        pdf_content = []
+
         for page in pdf:
             txt_page = page.get_textpage().extractDICT()["blocks"]
             logging.info(page)
@@ -32,56 +29,59 @@ class PdfTranslator(TranslatorCore):
                 for line in lines:
                     spans = line.get("spans")
                     for metadata in spans:
-                        logging.info(metadata)
+                        # Need the BBOX for annotations. Need to keep the text with attr for inserting into page. Maybe page num
                         if metadata.get("text").strip():
-                            pdf_content["text"].append(metadata.get("text"))
-                            pdf_content["font"].append(metadata.get("font"))
-                            pdf_content["size"].append(metadata.get("size"))
-                            pdf_content["color"].append(metadata.get("color"))
-                            pdf_content["origin"].append(metadata.get("origin"))
-                            pdf_content["bbox"].append(metadata.get("bbox"))
-                        logging.info(f"""Metadata is: \n Text: {pdf_content["text"]}, 
-                                     \n Font: {pdf_content["font"]}, 
-                                     \n Size: {pdf_content["size"]}, 
-                                     \n Color:{pdf_content["color"]}
-                                                    """)
+                            new_row = []
+                            new_row.append(metadata.get("text"))
+                            new_row.append(metadata.get("font"))
+                            new_row.append(metadata.get("size"))
+                            new_row.append(metadata.get("color"))
+                            new_row.append(metadata.get("bbox"))
+                            new_row.append(page.number)
+                            pdf_content.append(new_row)
+                            logging.info(f"Metadata is: {new_row} ")
+
         return pdf, pdf_content
     
     def translate_pdf(self):
+
         pdf, pdf_content = self.pdf_text_extractor()
         self.full_output_path= self.file_exists()
 
-        txt_src = pdf_content["text"]
-        translation_source = "\n".join(txt_src)    
+        txt_src = ""
 
-        translated_content = asyncio.run(translate_text(translation_source,self.target_lang_code))
+        for i in pdf_content:
+            txt_src += i[0] + "|||"
 
-        pdf_content["translations"] = translated_content.split("\n")
+        translated_content = asyncio.run(translate_text(txt_src,self.target_lang_code))
+        
+        translated_list = translated_content.split('|||')
 
-        for translations,font,size,color,origin,bbox in zip(
-            pdf_content["translations"],
-            pdf_content["font"],
-            pdf_content["size"],
-            pdf_content["color"],
-            pdf_content["origin"],
-            pdf_content["bbox"]) :
+        logging.info(f"Translated content is {translated_list}")
 
-            for page in pdf:
-                page.add_redact_annot(bbox)
+        for i, value in enumerate(pdf_content):
+            if i < len(translated_list):
+                i[0] = translated_list[value]
                 
+        #Creating annotations so we can remove the content to later replace it
+        
+        #TODO: Doesnt seem to be retaining bold letters and quotation marks
+
+        for page in pdf:
+            for attr in pdf_content:
+                translations = attr[0]
+                font = attr[1]
+                size = attr[2]
+                color = attr[3]
+                bbox = attr[4]
+
                 font = self.font_validator(font)
                 color = self.color_validator(color)
-                #TODO: Replace this with the page from our pdf_content so we can save it correctly
+
+                page.add_redact_annot(bbox,text=translations, fontname=font, fontsize=size, text_color=color)
+                
                 # Removes content 
                 page.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE,graphics=pymupdf.PDF_REDACT_LINE_ART_NONE) 
-                # # Replaces content with correct data 
-                page.insert_text(
-                    origin,
-                    translations,
-                    fontname=font,
-                    fontsize=size,
-                    color=color,
-                )
 
         pdf.save(self.full_output_path)
         pdf.close()
