@@ -4,6 +4,7 @@ import asyncio
 import logging
 import pymupdf
 import os
+pymupdf.TOOLS.set_small_glyph_heights(True)
 
 class PdfTranslator(TranslatorCore):
     def __init__(self, file_path, target_lang_code, upload_folder=None, username=None, testing=None):
@@ -59,27 +60,23 @@ class PdfTranslator(TranslatorCore):
 
         logging.info(f"Translated content is {translated_list}")
 
-        for i, value in enumerate(pdf_content):
+        for i, attr in enumerate(pdf_content):
             if i < len(translated_list):
-                i[0] = translated_list[value]
+                attr[0] = translated_list[i]
                 
         #Creating annotations so we can remove the content to later replace it
-        
-        #TODO: Doesnt seem to be retaining bold letters and quotation marks
+        #TODO: There is a current issue that creates white boxes between certain text.
 
         for page in pdf:
             for attr in pdf_content:
-                translations = attr[0]
-                font = attr[1]
+                translations = attr[0]          
+                font = self.font_validator(attr[1])
                 size = attr[2]
-                color = attr[3]
+                color = self.color_validator(attr[3])
                 bbox = attr[4]
 
-                font = self.font_validator(font)
-                color = self.color_validator(color)
-
                 page.add_redact_annot(bbox,text=translations, fontname=font, fontsize=size, text_color=color)
-                
+    
                 # Removes content 
                 page.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE,graphics=pymupdf.PDF_REDACT_LINE_ART_NONE) 
 
@@ -87,13 +84,14 @@ class PdfTranslator(TranslatorCore):
         pdf.close()
         return os.path.basename(self.full_output_path)
 
-    def font_validator(self,font_name):
-            base_fonts = pymupdf.Base14_fontdict.keys()
-            if font_name.lower() not in base_fonts:
-                logging.warning(f"Font '{font_name}' is not a Base14 font.")
-                return "Helvetica"
-            else:
-                return font_name
+    def font_validator(self, font_name):
+        if "Bold" in font_name:
+            return "Helvetica-Bold"
+        elif font_name.lower() in pymupdf.Base14_fontdict.keys():
+            return font_name
+        else:
+            logging.warning(f"Font '{font_name}' not found. Using Helvetica.")
+            return "Helvetica"
             
     def color_validator(self, color_int):
         try:
