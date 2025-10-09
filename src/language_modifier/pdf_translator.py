@@ -6,6 +6,8 @@ import pymupdf
 import os
 pymupdf.TOOLS.set_small_glyph_heights(True)
 
+## Currently there is a limitation for PDFs with images. Only text can be processed
+
 class PdfTranslator(TranslatorCore):
     def __init__(self, file_path, target_lang_code, upload_folder=None, username=None, testing=None):
         super().__init__(file_path, target_lang_code, upload_folder,testing)
@@ -63,24 +65,40 @@ class PdfTranslator(TranslatorCore):
         for i, attr in enumerate(pdf_content):
             if i < len(translated_list):
                 attr[0] = translated_list[i]
-                
-        #Creating annotations so we can remove the content to later replace it
-        #TODO: There is a current issue that creates white boxes between certain text.
 
-        for page in pdf:
+        new_pdf = pymupdf.open()
+
+        for page_num, old_page in enumerate(pdf):
+            rect = old_page.rect
+            new_page = new_pdf.new_page(width=rect.width, height=rect.height)
+
+            # Draw each text block belonging to this page
             for attr in pdf_content:
-                translations = attr[0]          
-                font = self.font_validator(attr[1])
-                size = attr[2]
-                color = self.color_validator(attr[3])
-                bbox = attr[4]
-
-                page.add_redact_annot(bbox,text=translations, fontname=font, fontsize=size, text_color=color)
-    
-                # Removes content 
-                page.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE,graphics=pymupdf.PDF_REDACT_LINE_ART_NONE) 
-
-        pdf.save(self.full_output_path)
+                text, font, size, color, bbox, pnum = attr
+                if pnum == page_num:
+                    font = self.font_validator(font)
+                    color = self.color_validator(color)
+                    html_text = f"""
+                <div style="
+                    font-family: {font};
+                    font-size: {size}px;
+                    color: rgb({int(color[0]*255)}, {int(color[1]*255)}, {int(color[2]*255)});
+                    line-height: 1.1;
+                    word-wrap: break-word;
+                ">
+                    {text}
+                </div>
+                """
+                    # Expanding slightly to make sure text is writin within margins
+                    rect = pymupdf.Rect(bbox)
+                    rect.x0 -= 1.0     # expand left
+                    rect.x1 += 1.0     # expand right
+                    rect.y0 -= 0.8     # expand upward
+                    rect.y1 += 0.8     # expand downward
+                    new_page.insert_htmlbox(rect,html_text)
+                    
+        new_pdf.save(self.full_output_path)
+        new_pdf.close()
         pdf.close()
         return os.path.basename(self.full_output_path)
 

@@ -42,7 +42,9 @@ class TestInput():
         assert os.path.exists(os.path.join(test_dir, output))
         
     def test_small_pdf_translation(self):
-        file_1 = PdfTranslator("sample-local-pdf.pdf", "English", test_dir,testing=True )
+        # For this test case we just download a sample pdf from the following: 
+        # https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf
+        file_1 = PdfTranslator("sample-local-pdf.pdf", "Spanish", test_dir,testing=True )
         output = file_1.translate_pdf()
         assert os.path.exists(os.path.join(test_dir, output))
 
