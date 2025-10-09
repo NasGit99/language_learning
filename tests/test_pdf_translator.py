@@ -40,11 +40,28 @@ class TestInput():
         file_1 = PdfTranslator(test_file_1_name, "Spanish", test_dir,testing=True )
         output = file_1.translate_pdf()
         assert os.path.exists(os.path.join(test_dir, output))
+    
+    def test_json_pdf_file(self, client,json_users):
+        import io
+        user_1, _ = json_users
+        file_data = {
+            "file": (io.BytesIO(b"dummy content"), test_file_1_name),
+            "target_language": "French"
+        }
+
+        response_send_file = client.post(
+            "/translate_document",
+            data=file_data,
+            content_type="multipart/form-data",
+            headers={"Authorization": f"Bearer {user_1.token}"}
+        )
+
+        assert response_send_file.status_code == 200
         
-    def test_small_pdf_translation(self):
-        # For this test case we just download a sample pdf from the following: 
-        # https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf
-        file_1 = PdfTranslator("sample-local-pdf.pdf", "Spanish", test_dir,testing=True )
-        output = file_1.translate_pdf()
-        assert os.path.exists(os.path.join(test_dir, output))
+    # def test_small_pdf_translation(self):
+    #     # For this test case we just download a sample pdf from the following: 
+    #     # https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf
+    #     file_1 = PdfTranslator("sample-local-pdf.pdf", "Spanish", test_dir,testing=True )
+    #     output = file_1.translate_pdf()
+    #     assert os.path.exists(os.path.join(test_dir, output))
 

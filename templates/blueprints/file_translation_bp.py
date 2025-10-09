@@ -1,7 +1,8 @@
-from flask import Blueprint, request, jsonify, session,send_from_directory,current_app
+from flask import Blueprint, request, jsonify,send_from_directory,current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from src.language_modifier.text_file_translator import TextFileTranslator
 from src.language_modifier.csv_translator import CsvTranslator
+from src.language_modifier.pdf_translator import PdfTranslator
 from src.language_modifier.language_code_resource import create_lang_codes
 import os
 from werkzeug.utils import secure_filename
@@ -71,6 +72,15 @@ def translate_files():
                 pass
             except ValueError as e:
                 return jsonify(f"error: {e}"), 400
+            
+        if file_extension.lower() == 'pdf':
+            translator = PdfTranslator(file, target_language_code)
+            try:
+                translated_file = translator.translate_pdf()
+                pass
+            except ValueError as e:
+                return jsonify(f"error: {e}"), 400
+
        
         if username and translated_file:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
