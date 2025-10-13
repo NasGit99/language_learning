@@ -1,4 +1,4 @@
-from language_modifier.language_translator import *
+from language_modifier.language_translator import translate_text
 import os
 import asyncio
 from flask import current_app
@@ -9,7 +9,7 @@ class TextFileTranslator(TranslatorCore):
     def __init__(self, file_path, target_lang_code, upload_folder=None, username=None, testing=None):
         super().__init__(file_path, target_lang_code, upload_folder,testing)
         self.username = username
-        
+
     def read_txt_file(self):
         self.file_validator()
         with open(self.upload_path,"r", encoding="utf8") as file:
