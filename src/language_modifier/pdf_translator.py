@@ -32,7 +32,6 @@ class PdfTranslator(TranslatorCore):
                 for line in lines:
                     spans = line.get("spans")
                     for metadata in spans:
-                        # Need the BBOX for annotations. Need to keep the text with attr for inserting into page. Maybe page num
                         if metadata.get("text").strip():
                             new_row = []
                             new_row.append(metadata.get("text"))
