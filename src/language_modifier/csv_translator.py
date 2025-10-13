@@ -7,8 +7,9 @@ import logging
 
 class CsvTranslator(TranslatorCore):
     
-    def __init__(self, file_path, target_lang_code, upload_folder=None, testing=None):
+    def __init__(self, file_path, target_lang_code, upload_folder=None, username=None, testing=None):
         super().__init__(file_path, target_lang_code, upload_folder,testing)
+        self.username = username
 
     def csv_reader(self):
         self.file_validator()
