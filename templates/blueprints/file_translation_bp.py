@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from src.language_modifier.text_file_translator import TextFileTranslator
 from src.language_modifier.csv_translator import CsvTranslator
 from src.language_modifier.pdf_translator import PdfTranslator
+from src.language_modifier.docx_translator import DocxTranslator
 from src.language_modifier.language_code_resource import create_lang_codes
 import os
 from werkzeug.utils import secure_filename
@@ -77,6 +78,14 @@ def translate_files():
             translator = PdfTranslator(file, target_language_code)
             try:
                 translated_file = translator.translate_pdf()
+                pass
+            except ValueError as e:
+                return jsonify(f"error: {e}"), 400
+
+        if file_extension.lower() == 'docx':
+            translator = DocxTranslator(file, target_language_code)
+            try:
+                translated_file = translator.generate_doc()
                 pass
             except ValueError as e:
                 return jsonify(f"error: {e}"), 400

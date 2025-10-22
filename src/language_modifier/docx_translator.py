@@ -1,6 +1,7 @@
 from language_modifier.base_translator import TranslatorCore
 from language_modifier.language_translator import translate_text
 import asyncio
+import os
 from docx import Document
 
 
@@ -8,6 +9,8 @@ class DocxTranslator(TranslatorCore):
     def __init__(self, file_path, target_lang_code, upload_folder=None, username=None, testing=None):
         super().__init__(file_path, target_lang_code, upload_folder,testing)
         self.username = username
+
+        #TODO Figure out how to preserve images and formatting
     
     def doc_reader(self):
         doc = Document(self.upload_path)
@@ -150,6 +153,8 @@ class DocxTranslator(TranslatorCore):
                     if footer_paragraphs_num < len(new_footer_txt):
                         paragraph.text = new_footer_txt[footer_paragraphs_num]
                         footer_paragraphs_num +=1 
-                        
+
         self.full_output_path= self.file_exists()
         doc.save(self.full_output_path)
+
+        return os.path.basename(self.full_output_path)
